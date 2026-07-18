@@ -1,0 +1,136 @@
+// Prisma schema — executable source of truth for the data model.
+// Mirrors ../../.specs/02-modelo-de-dados.md (any divergence is a bug).
+//
+// Conventions:
+// - Tables/columns in snake_case (mapped), client fields in camelCase.
+// - Money is stored as integer cents (BRL centavos) — exact math, no float drift.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderType {
+  dine_in
+  counter
+  delivery
+
+  @@map("order_type")
+}
+
+enum PaymentStatus {
+  unpaid
+  paid
+
+  @@map("payment_status")
+}
+
+enum TableStatus {
+  free
+  occupied
+
+  @@map("table_status")
+}
+
+enum KitchenStatus {
+  queued
+  preparing
+  ready
+  delivered
+
+  @@map("kitchen_status")
+}
+
+model Operator {
+  id           String    @id @default(uuid())
+  username     String    @unique
+  name         String
+  pinHash      String?   @map("pin_hash")
+  pinSet       Boolean   @default(false) @map("pin_set")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  openedOrders Order[]   @relation("OrderOpenedBy")
+  closedOrders Order[]   @relation("OrderClosedBy")
+
+  @@map("operator")
+}
+
+model Table {
+  id     String      @id @default(uuid())
+  number Int         @unique
+  status TableStatus @default(free)
+  orders Order[]
+
+  @@map("table")
+}
+
+model Order {
+  id            String          @id @default(uuid())
+  type          OrderType
+  tableId       String?         @map("table_id")
+  table         Table?          @relation(fields: [tableId], references: [id])
+  customerName  String?         @map("customer_name")
+  paymentStatus PaymentStatus   @default(unpaid) @map("payment_status")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  closedAt      DateTime?       @map("closed_at")
+  // Operator who opened the order.
+  operatorId    String          @map("operator_id")
+  operator      Operator        @relation("OrderOpenedBy", fields: [operatorId], references: [id])
+  // Audit (HU-42): operator who closed the order — may differ from the opener.
+  closedById    String?         @map("closed_by_id")
+  closedBy      Operator?       @relation("OrderClosedBy", fields: [closedById], references: [id])
+  items         OrderItem[]
+  tickets       KitchenTicket[]
+
+  @@map("order")
+}
+
+model OrderItem {
+  id                     String         @id @default(uuid())
+  orderId                String         @map("order_id")
+  order                  Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId             String         @map("menu_item_id")
+  menuItem               MenuItem       @relation(fields: [menuItemId], references: [id])
+  quantity               Int
+  // Unit price in cents, frozen at ordering time (never recalculated from menu_item).
+  finalPrice             Int            @map("final_price")
+  // Free-form JSON: { point?, remove?: string[], add?: string[], note? }
+  modifiers              Json?
+  kitchenStatus          KitchenStatus  @default(queued) @map("kitchen_status")
+  // Timestamp of the last kitchen_status transition (elapsed-time display on the app).
+  kitchenStatusChangedAt DateTime?      @map("kitchen_status_changed_at")
+  // Ticket the item was sent to the kitchen with; null = not sent yet (HU-29).
+  kitchenTicketId        String?        @map("kitchen_ticket_id")
+  kitchenTicket          KitchenTicket? @relation(fields: [kitchenTicketId], references: [id])
+
+  @@map("order_item")
+}
+
+model MenuItem {
+  id       String      @id @default(uuid())
+  name     String
+  // Price in cents (BRL centavos).
+  price    Int
+  category String
+  // Optional customization config for the app's customize screen:
+  // { removableIngredients?: string[], extraIngredients?: {name, price}[], meatPoint?: boolean }
+  customization Json?
+  orderItems    OrderItem[]
+
+  @@map("menu_item")
+}
+
+model KitchenTicket {
+  id        String      @id @default(uuid())
+  orderId   String      @map("order_id")
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  // Human-friendly sequential ticket number (e.g. #1404).
+  number    Int         @unique @default(autoincrement())
+  createdAt DateTime    @default(now()) @map("created_at")
+  items     OrderItem[]
+
+  @@map("kitchen_ticket")
+}
