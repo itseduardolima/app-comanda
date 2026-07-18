@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button/button';
 import { Card } from '@/components/ui/card/card';
 import { Text } from '@/components/ui/text/text';
 import { useOrder } from '@/hooks/use-orders';
+import { useReceipt } from '@/hooks/use-receipt';
 import { useKitchenSocket } from '@/ws/use-kitchen-socket';
 import { formatCents, t } from '@/i18n';
 import { isLocalId, useOrdersStore } from '@/store/orders.store';
@@ -51,6 +52,7 @@ export default function OrderDetailScreen() {
   const closeOrder = useOrdersStore((state) => state.closeOrder);
   const [sending, setSending] = useState(false);
   const [closing, setClosing] = useState(false);
+  const { generating, share } = useReceipt(theme.brand);
   useKitchenSocket(id, order?.tableId ?? undefined);
 
   if (!order) {
@@ -257,6 +259,17 @@ export default function OrderDetailScreen() {
         {!isPaid && order.items.length > 0 ? (
           <Button variant="primary" size="lg" onPress={handleClose} loading={closing}>
             {t('orderDetail.closeOrder')} · {formatCents(total)}
+          </Button>
+        ) : null}
+        {isPaid ? (
+          <Button
+            variant="secondary"
+            onPress={() => {
+              void share(order).catch(() => Alert.alert(t('receipt.error')));
+            }}
+            loading={generating}
+          >
+            {t('receipt.generate')}
           </Button>
         ) : null}
       </View>

@@ -145,6 +145,13 @@ export const ptBR = {
     reconnecting: 'Reconectando…',
     onFire: 'Na chapa',
   },
+  receipt: {
+    generate: 'Gerar comprovante',
+    shareTitle: 'Compartilhar comprovante',
+    paidNotice: 'Comanda registrada como paga',
+    fiscalDisclaimer: 'Documento sem valor fiscal — o pagamento ocorre fora do aplicativo.',
+    error: 'Não foi possível gerar o comprovante.',
+  },
   sales: {
     title: 'Vendas',
     todayTitle: 'Hoje',

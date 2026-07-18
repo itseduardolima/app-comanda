@@ -71,7 +71,7 @@ export function Button({
           justifyContent: 'center',
           flexDirection: 'row',
           gap: theme.spacing.sm,
-          opacity: disabled ? 0.5 : pressed ? 0.85 : 1,
+          opacity: disabled || loading ? 0.6 : pressed ? 0.85 : 1,
         },
         container[variant],
       ]}

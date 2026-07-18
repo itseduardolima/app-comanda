@@ -14,7 +14,7 @@ export function Chip({ label, selected = false, onPress, disabled = false }: Pro
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ selected, disabled }}
+      accessibilityState={{ selected, disabled: disabled || !onPress }}
       onPress={onPress}
       disabled={disabled || !onPress}
       style={({ pressed }) => ({
