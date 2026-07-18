@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+build/
+.expo/
+web-build/
+expo-env.d.ts
+
+# Native build artifacts
+*.ipa
+*.aab
+*.apk
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
