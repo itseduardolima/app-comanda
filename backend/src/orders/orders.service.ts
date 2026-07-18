@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -45,7 +46,7 @@ export class OrdersService {
       }
     }
 
-    const order = await this.prisma.$transaction(async (tx) => {
+    const { order, tableStatus } = await this.prisma.$transaction(async (tx) => {
       const created = await tx.order.create({
         data: {
           type: dto.type,
@@ -53,12 +54,18 @@ export class OrdersService {
           customerName: dto.customerName ?? null,
           operatorId,
         },
+      });
+      let status: TableStatus | undefined = undefined;
+      if (created.tableId) {
+        const table = await this.tablesService.refreshStatus(tx, created.tableId);
+        status = table.status;
+      }
+      // Re-fetched after refreshStatus so order.table.status is not stale.
+      const full = await tx.order.findUniqueOrThrow({
+        where: { id: created.id },
         include: orderInclude,
       });
-      if (created.tableId) {
-        await this.tablesService.refreshStatus(tx, created.tableId);
-      }
-      return created;
+      return { order: full, tableStatus: status };
     });
 
     if (order.tableId) {
@@ -66,7 +73,7 @@ export class OrdersService {
         orderId: order.id,
         paymentStatus: order.paymentStatus,
         tableId: order.tableId,
-        tableStatus: 'occupied',
+        tableStatus,
       });
     }
     return order;
@@ -171,17 +178,26 @@ export class OrdersService {
     }
 
     const { closed, tableStatus } = await this.prisma.$transaction(async (tx) => {
-      const updated = await tx.order.update({
-        where: { id: orderId },
+      // Conditional write: a concurrent close loses the race and gets 409.
+      const applied = await tx.order.updateMany({
+        where: { id: orderId, paymentStatus: 'unpaid' },
         data: { paymentStatus: 'paid', closedAt: new Date(), closedById },
-        include: orderInclude,
       });
+      if (applied.count === 0) {
+        throw new ConflictException('Order is already paid');
+      }
+      const updated = await tx.order.findUniqueOrThrow({ where: { id: orderId } });
       let status: TableStatus | undefined = undefined;
       if (updated.tableId) {
         const table = await this.tablesService.refreshStatus(tx, updated.tableId);
         status = table.status;
       }
-      return { closed: updated, tableStatus: status };
+      // Re-fetched after refreshStatus so order.table.status is not stale.
+      const full = await tx.order.findUniqueOrThrow({
+        where: { id: orderId },
+        include: orderInclude,
+      });
+      return { closed: full, tableStatus: status };
     });
 
     this.kitchenGateway.emitOrderUpdated({
@@ -217,7 +233,10 @@ export class OrdersService {
     const extras = customization?.extraIngredients ?? [];
     const extrasTotal = added.reduce((total, name) => {
       const extra = extras.find((candidate) => candidate.name === name);
-      return total + (extra?.price ?? 0);
+      if (!extra) {
+        throw new BadRequestException(`Unknown extra ingredient: ${name}`);
+      }
+      return total + extra.price;
     }, 0);
     return menuItem.price + extrasTotal;
   }

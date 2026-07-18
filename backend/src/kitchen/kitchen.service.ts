@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { KitchenStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { KitchenGateway } from './kitchen.gateway';
@@ -34,6 +39,9 @@ export class KitchenService {
     if (!order) {
       throw new NotFoundException('Order not found');
     }
+    if (order.paymentStatus === 'paid') {
+      throw new ConflictException('Order is already paid');
+    }
     if (order.items.length === 0) {
       throw new BadRequestException('Cannot send an order with no items to the kitchen');
     }
@@ -44,14 +52,19 @@ export class KitchenService {
 
     const ticket = await this.prisma.$transaction(async (tx) => {
       const created = await tx.kitchenTicket.create({ data: { orderId } });
-      await tx.orderItem.updateMany({
-        where: { id: { in: pendingItems.map((item) => item.id) } },
+      // The kitchenTicketId: null guard makes concurrent send-to-kitchen calls
+      // safe: items grabbed by another ticket in between are not re-assigned.
+      const attached = await tx.orderItem.updateMany({
+        where: { id: { in: pendingItems.map((item) => item.id) }, kitchenTicketId: null },
         data: {
           kitchenTicketId: created.id,
           kitchenStatus: 'queued',
           kitchenStatusChangedAt: new Date(),
         },
       });
+      if (attached.count === 0) {
+        throw new BadRequestException('All items were already sent to the kitchen');
+      }
       return tx.kitchenTicket.findUniqueOrThrow({
         where: { id: created.id },
         include: { items: { include: { menuItem: true } } },
@@ -77,6 +90,9 @@ export class KitchenService {
     if (item.kitchenTicketId === null) {
       throw new BadRequestException('Item has not been sent to the kitchen yet');
     }
+    if (item.order.paymentStatus === 'paid') {
+      throw new ConflictException('Order is already paid');
+    }
 
     const currentIndex = KITCHEN_STATUS_SEQUENCE.indexOf(item.kitchenStatus);
     const nextIndex = KITCHEN_STATUS_SEQUENCE.indexOf(next);
@@ -87,9 +103,17 @@ export class KitchenService {
     }
 
     const changedAt = new Date();
-    const updated = await this.prisma.orderItem.update({
-      where: { id: itemId },
+    // Conditional write: only succeeds if the status is still the one we
+    // validated against, so concurrent transitions cannot double-apply.
+    const applied = await this.prisma.orderItem.updateMany({
+      where: { id: itemId, kitchenStatus: item.kitchenStatus },
       data: { kitchenStatus: next, kitchenStatusChangedAt: changedAt },
+    });
+    if (applied.count === 0) {
+      throw new ConflictException('Item status changed concurrently, refresh and retry');
+    }
+    const updated = await this.prisma.orderItem.findUniqueOrThrow({
+      where: { id: itemId },
       include: { menuItem: true },
     });
 

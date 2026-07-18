@@ -48,10 +48,16 @@ export class AuthService {
       throw new ConflictException('PIN already set for this operator');
     }
     const pinHash = await bcrypt.hash(pin, PIN_SALT_ROUNDS);
-    const updated = await this.prisma.operator.update({
-      where: { id: operatorId },
+    // Conditional update: if a concurrent request already set the PIN, the
+    // count is 0 and we reject instead of silently overwriting it.
+    const result = await this.prisma.operator.updateMany({
+      where: { id: operatorId, pinSet: false },
       data: { pinHash, pinSet: true },
     });
+    if (result.count === 0) {
+      throw new ConflictException('PIN already set for this operator');
+    }
+    const updated = await this.prisma.operator.findUniqueOrThrow({ where: { id: operatorId } });
     return this.buildAuthResult(updated);
   }
 
