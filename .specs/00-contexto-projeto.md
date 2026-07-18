@@ -51,7 +51,7 @@ Navegação inferior do app (tab bar): **Comandas · Cardápio · Vendas · Perf
 ## Riscos / pontos em aberto
 
 - **Publicação nas lojas**: iOS exige conta Apple Developer (US$ 99/ano) e revisão mais rígida.
-- **Múltiplas comandas por mesa**: definir regras de divisão de itens e total da mesa.
+- **Múltiplas comandas por mesa**: ✅ regra de liberação decidida (HU-41): mesa só volta a Livre quando **todas** as comandas dela estiverem pagas (ver `02-modelo-de-dados.md`). Divisão de itens entre comandas e total agregado da mesa seguem em aberto.
 - **Segurança do PIN**: 4 dígitos é fraco — política de bloqueio após N tentativas, quem pode fechar conta.
 - **Sincronização offline**: política de conflito quando dois garçons editam a mesma comanda offline.
 - **Fechar conta = registro manual**: confirmação antes de fechar, log de qual operador fechou.

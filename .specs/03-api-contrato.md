@@ -49,8 +49,17 @@
 
 // POST /api/orders/:id/items
 { "menuItemId": "m-picanha", "quantity": 1,
-  "modifiers": { "point": "ao_ponto", "remove": ["cebola"], "note": "sem sal" } }
+  "modifiers": { "point": "ao_ponto", "remove": ["cebola"], "add": ["Farofa"], "note": "sem sal" } }
 ```
+
+Regras implementadas:
+
+- `tableId` é obrigatório quando `type = dine_in` (400 sem ele) e ignorado nos demais tipos.
+- `modifiers.add` lista **extras** por nome; cada nome deve existir em `menu_item.customization.extraIngredients` (nome desconhecido → 400). O preço do extra soma no `final_price` unitário do item.
+- Item **já enviado à cozinha** (com ticket) não pode ser editado nem removido → 409.
+- Mutações em comanda **paga** → 409.
+- `DELETE` de item responde 204 sem corpo.
+- `POST /orders/:id/close` → 409 se a comanda já está paga; resposta traz `closedAt` e `closedBy { id, name }` (auditoria HU-42) e a mesa é liberada se era a última comanda aberta (HU-41).
 
 ## Menu — `MenuModule`
 
@@ -89,8 +98,8 @@ Canal WS servido pelo backend (`@nestjs/websockets`). Autenticação com o **mes
 
 | Evento | Payload | Quando |
 |---|---|---|
-| `item.status.changed` | `{ orderId, itemId, kitchenStatus }` | `PATCH /kitchen/items/:itemId` muda status |
-| `order.updated` | `{ orderId, paymentStatus, ... }` | Item adicionado/removido, comanda fechada |
+| `item.status.changed` | `{ orderId, itemId, kitchenStatus, changedAt }` | `PATCH /kitchen/items/:itemId` muda status |
+| `order.updated` | `{ orderId, paymentStatus, tableId?, tableStatus?, closedAt? }` | Comanda criada em mesa, item adicionado/editado/removido, comanda fechada |
 | `kitchen.ticket.created` | `{ orderId, ticketNumber }` | `send-to-kitchen` gera ticket |
 
 **Eventos cliente → servidor:**

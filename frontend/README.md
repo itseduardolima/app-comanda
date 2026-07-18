@@ -61,15 +61,47 @@ src/
 - Status de cozinha em **tempo real via WebSocket**: cliente WS assina a comanda/mesa e recebe os deltas; ao (re)conectar, faz um `GET` REST de baseline (ver `../.specs/04-fluxos.md` e `03-api-contrato.md`).
 - Tema/marca **configurável** (cores, tipografia, nome, logo) via `src/theme/` — o protótipo `App Garcom Fogo e Brasa.dc.html` é só um exemplo de tema, não a marca fixa do app.
 
-## Setup (a preencher no scaffold — Fase 1)
+## Setup
+
+Pré-requisitos: Node 20+, backend rodando (ver `../backend/README.md`).
 
 ```bash
 npm install
-npx expo start          # dev (Expo Go / simulador)
 
-# build de loja
-eas build --platform ios
-eas build --platform android
+# apontar o app para o backend (padrão: http://localhost:3000)
+# — em dispositivo físico, troque em app.json > expo.extra.apiUrl/wsUrl
+#   pelo IP da máquina na rede local (ex.: http://192.168.0.10:3000/api)
+
+npx expo start          # dev (Expo Go / simulador iOS / emulador Android)
+
+# qualidade
+npm run typecheck       # tsc --noEmit (strict)
+npm run lint            # expo lint
+npm test                # jest (componentes, stores, i18n)
 ```
 
-> Ainda **não há código** — este diretório contém apenas a documentação. O scaffold entra na **Fase 1** do roadmap (ver `../PLANEJAMENTO.md`): navegação e telas com dados mockados, antes do backend.
+Operador de demonstração (seed do backend): usuário `demo`, PIN `1234`;
+usuários `joao` e `maria` caem no fluxo de 1º acesso (criar PIN).
+
+### Tema / marca
+
+A marca é **configuração**, não código: nome, cores, tipografia e espaçamentos
+vivem em `src/theme/tokens.ts` (o tema "Fogo & Brasa" é só o exemplo do
+protótipo). O MVP suporta **apenas modo claro** — decisão documentada em
+`tokens.ts` (uso em salão iluminado); dark mode entra como um segundo objeto
+de tokens quando necessário.
+
+### Build de loja (EAS)
+
+Perfis em `eas.json`: `development` (dev client), `preview` (distribuição
+interna) e `production` (loja, com `autoIncrement` e canal OTA `production`).
+
+```bash
+npx eas build --platform android --profile production   # .aab
+npx eas build --platform ios --profile production       # .ipa
+npx eas update --channel production                     # OTA de correções JS
+```
+
+> Segredos de produção (ex.: `API_URL`) via **EAS Secrets/env**, nunca
+> hardcoded no repositório. Publicação nas lojas: ver backlog Sprint 6
+> (HU-44/HU-45).

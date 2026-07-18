@@ -54,26 +54,50 @@ O schema do banco vive em `prisma/schema.prisma` (fonte da verdade do modelo —
 - **Sem** lógica de pagamento/cobrança/webhook — fora de escopo.
 - Toda mudança de comportamento atualiza a spec correspondente em `../.specs/`.
 
-## Setup (a preencher no scaffold — Fase 3)
+## Setup
+
+Pré-requisitos: Node 20+, Docker (para o PostgreSQL local).
 
 ```bash
+# banco de dados local (Postgres 16 em Docker)
+docker compose up -d
+
 # instalar
 npm install
 
 # variáveis de ambiente (criar .env a partir de .env.example)
-#   DATABASE_URL=postgres://...
+#   DATABASE_URL=postgresql://app_comanda:app_comanda@localhost:5432/app_comanda?schema=public
 #   JWT_SECRET=...
 
-# Prisma: gerar client + rodar migrations
-npx prisma generate
+# Prisma: rodar migrations + popular dados de demonstração
 npx prisma migrate dev
+npx prisma db seed
 
-# rodar em dev
+# rodar em dev (http://localhost:3000/api)
 npm run start:dev
 
-# testes
-npm test
-npm run test:e2e
+# qualidade
+npm run typecheck        # tsc --noEmit
+npm run lint             # eslint
+npm test                 # unidade (services)
+npm run test:e2e         # e2e (Supertest + Socket.IO) — usa o banco app_comanda_test
 ```
 
-> Ainda **não há código** — este diretório contém apenas a documentação. O scaffold entra na **Fase 3** do roadmap (ver `../PLANEJAMENTO.md`).
+> O e2e usa um banco separado (`app_comanda_test`). Crie-o uma vez:
+> `docker exec app-comanda-postgres psql -U app_comanda -c 'CREATE DATABASE app_comanda_test'`
+
+Seed de demonstração: operadores `joao`/`maria` (sem PIN — 1º acesso), `demo`
+(PIN `1234`), 12 mesas e um cardápio de exemplo. Tickets de cozinha começam
+em `#1400`.
+
+### Decisões de implementação
+
+- **Preços em centavos** (`Int`): aritmética exata, sem ponto flutuante.
+- **Itens já enviados à cozinha não podem ser editados/removidos** — o
+  `PATCH/DELETE` de item retorna 409 se o item já tem ticket.
+- **`send-to-kitchen` reenvia apenas itens ainda sem ticket** (novos), nunca
+  re-enfileira os já enviados.
+- **Fechar conta** grava `closed_at` e `closed_by_id` (auditoria, HU-42) e
+  **libera a mesa** quando era a última comanda aberta (HU-41).
+- Escritas condicionais (`updateMany` + contagem) protegem contra corridas:
+  fechar duas vezes, enviar à cozinha em paralelo, transição dupla de status.
