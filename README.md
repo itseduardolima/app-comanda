@@ -11,6 +11,7 @@ demonstração — nome, cores e cardápio são configuração.
 | [`frontend/`](frontend/) | App React Native + Expo (Expo Router, Zustand, offline-first) |
 | [`.specs/`](.specs/) | Contrato compartilhado — **fonte da verdade** |
 | [`backlog/`](backlog/) | Histórias de usuário por sprint (HU-01 … HU-48) |
+| [`CLAUDE.md`](CLAUDE.md) | Guia de entrada para agentes de IA — onde ler cada spec e as regras inegociáveis |
 
 ## Subir tudo em dev
 
