@@ -54,7 +54,7 @@ O filtro "Todas" da tela de Comandas devolve, portanto, *todas as comandas já c
 
 Some-se a isso: **o schema não tem um único `@@index`** (só três `@unique`). `order.payment_status`, `order.table_id` e `order_item.order_id` são todos varridos.
 
-Correção: paginação (ou recorte "hoje/turno", que é o que o garçom realmente quer), índices nas colunas de filtro, e um `select` mais enxuto na listagem — a lista precisa de resumo, não da comanda inteira.
+Correção: paginação (ou recorte por dia, que é o que o garçom realmente quer), índices nas colunas de filtro, e um `select` mais enxuto na listagem — a lista precisa de resumo, não da comanda inteira.
 
 Isso é **fato verificado no código**, não projeção: o endpoint hoje não tem limite algum.
 
@@ -66,7 +66,7 @@ Três itens conhecidos e documentados no próprio código:
 - **Sem rate limit.** `@nestjs/throttler` não está instalado.
 - **CORS aberto.** `app.enableCors()` sem origin (`backend/src/main.ts:11`) e `origin: '*'` no gateway (`backend/src/kitchen/kitchen.gateway.ts`).
 
-Num app de salão o vetor realista não é o hacker: é o celular do garçom esquecido numa mesa. Lockout + expiração de sessão por turno cobrem o caso real.
+Num app de salão o vetor realista não é o hacker: é o celular do garçom esquecido numa mesa. Lockout + expiração de sessão por inatividade cobrem o caso real.
 
 ### 7. Cobertura de teste onde falta
 
@@ -114,7 +114,7 @@ O escopo exclui pagamento, o que é uma decisão de produto sólida. Mas num res
 ## Tier 4 — Depois que estiver rodando
 
 - **Backup do Postgres.** Hoje só existe o `docker-compose` de desenvolvimento. Produção precisa de backup automático e de um restore *testado* — backup nunca verificado é backup que não existe.
-- **Aba Vendas.** Existe como tela, mas relatório de fechamento de turno/dia é o que o dono do restaurante realmente quer. É provavelmente a primeira funcionalidade pedida por quem paga.
+- **Aba Vendas.** Existe como tela, mas o resumo do **dia** — total, número de comandas, ticket médio — é o que o dono do restaurante realmente quer. É provavelmente a primeira funcionalidade pedida por quem paga. Nota: **turnos foram descartados**; o recorte do produto é o dia, sem noção de abertura/fechamento de expediente.
 - **Swagger/OpenAPI.** O contrato vive só no markdown (`.specs/03-api-contrato.md`). Vira dívida no dia em que um segundo cliente (KDS, backoffice) for escrito.
 - **PDV e Backoffice.** O projeto de design já tem `PDV Fogo e Brasa.dc.html` e `Backoffice Fogo e Brasa.dc.html` — há visão de produto além do app do garçom.
 

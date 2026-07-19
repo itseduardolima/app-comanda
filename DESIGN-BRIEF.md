@@ -60,7 +60,7 @@ Só modo claro.
 
 Vi telas apertadas na primeira rodada. O celular do garçom não é o seu aparelho de referência: é o mais barato que a casa comprou, às vezes com a fonte do sistema aumentada porque quem usa tem 50 anos.
 
-Para cada tela densa (comanda, cardápio, KDS, fechamento de turno), mostre **também o caso apertado**, lado a lado com o confortável:
+Para cada tela densa (comanda, cardápio, KDS, lista de comandas), mostre **também o caso apertado**, lado a lado com o confortável:
 
 - **Largura mínima 320pt** (iPhone SE) além da largura padrão. Se algo quebra, o desenho está errado — não o aparelho.
 - **Texto longo real**: nome de item com 40+ caracteres, nome de cliente comprido, `R$ 1.234,56`, quantidade `12×`. Diga o que trunca, o que quebra linha e o que nunca pode encolher (valor e status nunca).
@@ -100,7 +100,7 @@ Especifique a animação de shimmer: direção, duração, easing e as duas core
 
 Para as ilustrações: monocromáticas ou de 2 cores da paleta, traço de ~1.7px como os ícones existentes, altura de ~120–160px.
 
-Motivos que servem a qualquer restaurante: comanda/ticket, mesa vista de cima, cadeiras, bandeja, sino de balcão, relógio de turno, prato genérico sem conteúdo identificável. **Não** use nada que identifique um tipo de cozinha. Evite mascote e evite a "caixa vazia" genérica.
+Motivos que servem a qualquer restaurante: comanda/ticket, mesa vista de cima, cadeiras, bandeja, sino de balcão, prato genérico sem conteúdo identificável. **Não** use nada que identifique um tipo de cozinha. Evite mascote e evite a "caixa vazia" genérica.
 
 ### 3. Animações e microinterações
 
@@ -141,11 +141,11 @@ Posição, duração, empilhamento e animação.
 
 Colunas por estágio (Na fila / Preparando / Pronto), cada ticket como cartão com número, mesa, tempo decorrido e itens. Precisa ser legível **a 2 metros de distância**, por alguém com as mãos ocupadas. Pense em: hierarquia de tempo (ticket velho precisa gritar), toque grande para avançar estágio, e o que acontece quando há mais tickets do que cabem na tela.
 
-**6B — Fechamento de turno / Vendas.** A aba Vendas existe mas está rasa. O dono do restaurante quer: total do turno, número de comandas, ticket médio, itens mais vendidos, e comparação com o dia anterior. Uma tela, sem virar dashboard de BI.
+**6B — Lista de comandas com recorte temporal.** Hoje o filtro "Todas" traz o histórico inteiro, o que não escala. Preciso do desenho de: seletor de período (hoje / ontem / últimos 7 dias), carregamento incremental ao rolar, e o indicador de que há mais.
 
-**6C — Lista de comandas com recorte temporal.** Hoje o filtro "Todas" traz o histórico inteiro, o que não escala. Preciso do desenho de: seletor de período (hoje / turno / ontem), carregamento incremental ao rolar, e o indicador de que há mais.
+**6C — Estados de erro de servidor.** API fora do ar, sessão expirada, e versão do app desatualizada. Três telas irmãs.
 
-**6D — Estados de erro de servidor.** API fora do ar, sessão expirada, e versão do app desatualizada. Três telas irmãs.
+> **Fora de escopo: turnos.** Não desenhe fechamento de turno, relatório de turno nem filtro por turno. O recorte de tempo do produto é o **dia**, não o turno — o app não tem noção de abertura/fechamento de expediente, e não vai ter.
 
 ### 7. Se sobrar espaço
 
