@@ -61,11 +61,18 @@ frontend/
     theme/
       tokens.ts                   # cores, tipografia, espaçamento — configurável por marca
       theme-provider.tsx
+      create-styles.ts            # helper dos *.styles.ts (ver 03-estilos.md)
+
+    styles/
+      screens/                     # estilo das telas — não pode ficar em app/ (viraria rota)
+        login.styles.ts
+        order-detail.styles.ts     # nome descreve a tela, não o caminho do arquivo de rota
 
     components/
       ui/                          # design system — sem regra de negócio, só visual
         button/
           button.tsx               # variant: primary|secondary|danger|ghost · size: sm|md|lg
+          button.styles.ts         # todo componente tem seu sibling de estilo
           button.test.tsx
         badge/
           badge.tsx                # variant: paid|unpaid|queued|preparing|ready|delivered
@@ -115,12 +122,15 @@ frontend/
 | Teste | `<arquivo>.test.ts(x)` ao lado do arquivo testado | `order-card.test.tsx` |
 | Variável/função/tipo | camelCase / PascalCase, inglês | `closeOrder`, `KitchenStatus` |
 | String de UI | nunca hardcoded — sempre via `src/i18n` | — |
+| Estilo de componente | `<componente>.styles.ts` ao lado do `.tsx` | `order-card/order-card.styles.ts` |
+| Estilo de tela | `src/styles/screens/<tela>.styles.ts`, nome descritivo | `app/orders/[id]/index.tsx` → `order-detail.styles.ts` |
 
 ## Regras
 
 - Tela em `app/` não importa de `src/api`, `src/ws` ou `src/db` diretamente — só de `src/hooks`.
 - Todo componente novo reutilizável ganha sua própria pasta em `src/components/`, mesmo que hoje só tenha um arquivo — facilita colocar teste/variantes depois.
 - Cores, espaçamento e tipografia só existem como token em `src/theme/tokens.ts` — nenhum valor de cor/fonte hardcoded dentro de um componente.
+- **Nenhum estilo inline.** JSX nunca carrega `style={{ … }}`; todo estilo vive num `*.styles.ts` feito com `createStyles`. Regra completa em [`03-estilos.md`](03-estilos.md) — o ESLint quebra o build se escapar.
 - Tipo que representa uma entidade da API (`Order`, `MenuItem`, `Table`) vive em `src/types/` e deve bater com `.specs/02-modelo-de-dados.md` e `.specs/03-api-contrato.md` da raiz — divergência é bug.
 - **`src/components/ui/` é o único lugar onde `Button`, `Badge`, `Card`, `Text`, `Input`, `Chip` existem.** Nenhuma tela ou componente de domínio recria um botão/badge estilizado na mão — todos importam e passam `variant`/`size`. Ver regra completa em `01-arquitetura.md` § "Reuso: componentes base, cores e variantes".
 - Variação visual nova = novo valor de `variant` no componente existente (e um novo token de cor em `theme/tokens.ts`, se for o caso) — não um componente novo em `ui/`.

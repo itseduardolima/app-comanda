@@ -8,6 +8,13 @@
 
 Origem do produto: protótipo de telas em `App Garcom Fogo e Brasa.dc.html` (validação de UX — Fase 0, concluída).
 
+O protótipo vive no Claude Design e é a **fonte da verdade visual** — divergência entre app e protótipo é bug do app:
+
+- Projeto: <https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e>
+- Arquivo do app do garçom: <https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa.dc.html>
+
+Como consultá-lo e como transcrever um valor novo para token: [`frontend/.specs/03-estilos.md` § Fonte do design](../frontend/.specs/03-estilos.md#fonte-do-design).
+
 ## O que o app faz (escopo do MVP)
 
 - **Login do operador** (garçom) por usuário + PIN de 4 dígitos.

@@ -17,6 +17,8 @@
 | Glossário código ↔ UI | [`../../.specs/06-glossario.md`](../../.specs/06-glossario.md) |
 | **Como o código do app é organizado internamente** | [`01-arquitetura.md`](01-arquitetura.md) (este diretório) |
 | **Estrutura de pastas e arquivos do app** | [`02-organizacao-pastas.md`](02-organizacao-pastas.md) (este diretório) |
+| **Como escrever estilo (sem inline, tokens, `*.styles.ts`)** | [`03-estilos.md`](03-estilos.md) (este diretório) |
+| **Onde fica o protótipo de design (fonte da verdade visual)** | [`03-estilos.md` § Fonte do design](03-estilos.md#fonte-do-design) |
 
 ## Índice
 
@@ -24,6 +26,7 @@
 |---|---|
 | [`01-arquitetura.md`](01-arquitetura.md) | Camadas (rotas → hooks/stores → api/ws/db), offline-first, tema, i18n, navegação |
 | [`02-organizacao-pastas.md`](02-organizacao-pastas.md) | Árvore de diretórios completa (`app/` e `src/`), convenção de nomes, onde cada tipo de arquivo vive |
+| [`03-estilos.md`](03-estilos.md) | Padrão `*.styles.ts` + `createStyles`, proibição de estilo inline, tokens do protótipo Fogo e Brasa |
 
 ## Regra de ouro
 

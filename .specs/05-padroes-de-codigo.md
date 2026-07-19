@@ -34,6 +34,7 @@
 - Estado global em **Zustand**; estado de servidor pode usar cache/queries.
 - **Offline-first**: escrever local (`expo-sqlite`) e sincronizar; toda mutação deve tolerar rede caindo.
 - Nada de string de UI hardcoded — usar i18n.
+- **Nada de estilo inline**: JSX nunca carrega `style={{ … }}`. Todo estilo vive num `*.styles.ts` construído com `createStyles`, e todo valor de cor/espaço/raio/fonte sai de `src/theme/tokens.ts` — que por sua vez transcreve o protótipo de design "Fogo e Brasa". Regra detalhada em [`frontend/.specs/03-estilos.md`](../frontend/.specs/03-estilos.md); o ESLint reprova violação.
 
 ## Testes
 
@@ -45,6 +46,7 @@
 
 1. Código em inglês, UI via i18n.
 2. Tipos passam (`tsc`), lint limpo.
+   - No frontend, lint limpo inclui **zero estilo inline** — a regra é automática, não confie na revisão manual.
 3. Testes relevantes passando.
 4. Spec em `.specs/` reflete o comportamento.
 5. Nenhuma lógica de pagamento/cobrança introduzida (fora de escopo).

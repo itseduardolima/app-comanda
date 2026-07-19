@@ -38,6 +38,7 @@ Regra: uma store nunca importa de `app/`; a dependência é sempre de fora para 
 ## Tema e i18n
 
 - **Tema configurável** (`src/theme/tokens.ts` + `ThemeProvider`): cores, tipografia, nome e logo não são hardcoded em componentes — o produto é genérico, a marca (ex. "Fogo & Brasa") é só um tema de exemplo.
+- **Estilo sempre em `*.styles.ts`** (`src/theme/create-styles.ts`): o tema só consegue trocar a marca de verdade porque nenhum componente ou tela escreve `style={{ … }}` inline. Padrão completo em [`03-estilos.md`](03-estilos.md).
 - **i18n** (`src/i18n/`): nenhuma string de UI hardcoded em componente ou tela; todo texto visível vem de `src/i18n/pt-BR.ts` (ou chave equivalente), mesmo o app sendo pt-BR only no MVP — isolar já evita hardcode espalhado.
 
 ## Componentes
@@ -61,7 +62,7 @@ Regra: **nunca duplicar estilo**. Antes de estilizar algo numa tela, verificar s
   <Badge variant="unpaid">A pagar</Badge>
   ```
 
-- **Cor só via token, nunca literal**: nenhum componente ou tela usa `#E85D2C` / `"red"` inline em `style`. Toda cor referencia `src/theme/tokens.ts` (ex. `theme.colors.danger`, `theme.colors.success`) — é o que permite trocar de marca/tema sem tocar em componente (ver seção "Tema e i18n").
+- **Cor só via token, nunca literal**: nenhum componente ou tela usa `#E85D2C` / `"red"` inline em `style`. Toda cor referencia `src/theme/tokens.ts` (ex. `theme.colors.danger`, `theme.colors.success`) — é o que permite trocar de marca/tema sem tocar em componente (ver seção "Tema e i18n"). E nem mesmo com token o estilo pode ser inline: ele vai para o `*.styles.ts` ([`03-estilos.md`](03-estilos.md)).
 - Antes de introduzir uma cor nova ou um novo estilo de botão/badge/card, a pergunta é "isso já existe como variante de algo em `ui/`?" — se a resposta for "quase", estende-se a variante existente em vez de criar um componente paralelo.
 - PR que adiciona um componente visual novo em `ui/` deve justificar por que uma variante de um componente existente não bastava.
 
