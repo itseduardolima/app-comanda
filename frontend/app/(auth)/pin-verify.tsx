@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button/button';
 import { Text } from '@/components/ui/text/text';
 import { useAuth } from '@/hooks/use-auth';
 import { t } from '@/i18n';
-import { useTheme } from '@/theme/theme-provider';
+import { useStyles } from '@/styles/screens/pin-verify.styles';
 
 /** Screen 00B — quick access by PIN, auto-submit on 4th digit (HU-16). */
 export default function PinVerifyScreen() {
-  const theme = useTheme();
+  const styles = useStyles();
   const router = useRouter();
   const { verifyPin } = useAuth();
   const { operatorId, username } = useLocalSearchParams<{ operatorId: string; username: string }>();
@@ -41,9 +41,9 @@ export default function PinVerifyScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <View style={{ flex: 1, justifyContent: 'center', padding: theme.spacing.lg, gap: theme.spacing.lg }}>
-        <View style={{ alignItems: 'center', gap: theme.spacing.xs }}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
           <Text variant="title">{t('auth.verifyPinTitle')}</Text>
           <Text variant="body" color="muted" align="center">
             {t('auth.verifyPinSubtitle')}

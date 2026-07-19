@@ -9,7 +9,7 @@ import { Text } from '@/components/ui/text/text';
 import { useMenu } from '@/hooks/use-menu';
 import { useOrderActions, useOrderOptional } from '@/hooks/use-orders';
 import { t, tCount } from '@/i18n';
-import { useTheme } from '@/theme/theme-provider';
+import { useStyles } from '@/styles/screens/menu.styles';
 import { MenuItem } from '@/types/menu';
 
 /**
@@ -18,7 +18,7 @@ import { MenuItem } from '@/types/menu';
  * without it, it is free browsing from the tab bar.
  */
 export default function MenuScreen() {
-  const theme = useTheme();
+  const styles = useStyles();
   const router = useRouter();
   const { orderId } = useLocalSearchParams<{ orderId?: string }>();
   const { categories, loading, loadError, reload } = useMenu();
@@ -53,16 +53,16 @@ export default function MenuScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={['top']}>
-      <View style={{ flex: 1, padding: theme.spacing.md, gap: theme.spacing.md }}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <View style={styles.container}>
         <Text variant="title">{t('menu.title')}</Text>
         {!orderId ? (
           <Text variant="caption" color="muted">
             {t('menu.browsingOnly')}
           </Text>
         ) : null}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
-          <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+          <View style={styles.categoryRow}>
             <Chip
               label={t('orders.filterAll')}
               selected={selectedCategory === null}
@@ -79,7 +79,7 @@ export default function MenuScreen() {
           </View>
         </ScrollView>
         {loadError ? (
-          <View style={{ alignItems: 'center', gap: theme.spacing.sm, paddingVertical: theme.spacing.xl }}>
+          <View style={styles.errorState}>
             <Text variant="body" color="muted" align="center">
               {t('menu.loadError')}
             </Text>
@@ -88,14 +88,14 @@ export default function MenuScreen() {
             </Button>
           </View>
         ) : (
-          <ScrollView contentContainerStyle={{ gap: theme.spacing.md, paddingBottom: theme.spacing.xxl }}>
+          <ScrollView contentContainerStyle={styles.listContent}>
             {loading && categories.length === 0 ? (
               <Text variant="body" color="muted" align="center">
                 {t('common.loading')}
               </Text>
             ) : null}
             {visibleCategories.map((group) => (
-              <View key={group.category} style={{ gap: theme.spacing.sm }}>
+              <View key={group.category} style={styles.categoryGroup}>
                 <Text variant="subtitle">{group.category}</Text>
                 {group.items.map((item) => (
                   <MenuItemCard

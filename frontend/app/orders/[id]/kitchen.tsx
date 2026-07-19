@@ -11,7 +11,7 @@ import { useKitchenSocket } from '@/hooks/use-kitchen-socket';
 import { useNow, elapsedMinutes } from '@/hooks/use-now';
 import { useKitchenTickets, useOrder, useOrderActions } from '@/hooks/use-orders';
 import { t } from '@/i18n';
-import { useTheme } from '@/theme/theme-provider';
+import { useStyles } from '@/styles/screens/kitchen-status.styles';
 import { ApiError } from '@/types/errors';
 import { KITCHEN_STATUS_SEQUENCE, KitchenStatus, OrderItem } from '@/types/order';
 
@@ -48,7 +48,7 @@ function bottleneck(items: OrderItem[]): KitchenStatus {
  * reconnect (HU-33).
  */
 export default function KitchenScreen() {
-  const theme = useTheme();
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { order } = useOrder(id);
   const { connected } = useKitchenSocket(id);
@@ -84,17 +84,17 @@ export default function KitchenScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <ScrollView contentContainerStyle={{ padding: theme.spacing.md, gap: theme.spacing.md }}>
+    <View style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         {!connected ? (
-          <View style={{ backgroundColor: theme.colors.warningSoft, borderRadius: theme.radii.md, padding: theme.spacing.sm }}>
+          <View style={styles.reconnectingBanner}>
             <Text variant="caption">{t('kitchen.reconnecting')}</Text>
           </View>
         ) : null}
 
         {latestTicket ? (
           <Card>
-            <View style={{ gap: theme.spacing.md }}>
+            <View style={styles.ticketBody}>
               <Text variant="title" align="center" color="primary">
                 {t('kitchen.ticket', { number: latestTicket.number })}
               </Text>
@@ -105,14 +105,14 @@ export default function KitchenScreen() {
 
         {/* 4D: delivered but not paid yet — loud reminder (HU-37). */}
         {activeStage === 'delivered' && isUnpaid ? (
-          <View style={{ backgroundColor: theme.colors.dangerSoft, borderRadius: theme.radii.md, padding: theme.spacing.md }}>
+          <View style={styles.unpaidBanner}>
             <Text variant="body" color="danger" align="center">
               {t('kitchen.unpaidWarning')}
             </Text>
           </View>
         ) : null}
 
-        <View style={{ flexDirection: 'row', gap: theme.spacing.sm, flexWrap: 'wrap' }}>
+        <View style={styles.stageChips}>
           {KITCHEN_STATUS_SEQUENCE.map((candidate) => (
             <Chip
               key={candidate}
@@ -134,8 +134,8 @@ export default function KitchenScreen() {
             const minutes = elapsedMinutes(item.kitchenStatusChangedAt, now);
             return (
               <Card key={item.id}>
-                <View style={{ gap: theme.spacing.sm }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={styles.itemBody}>
+                  <View style={styles.itemRow}>
                     <Text variant="body">
                       {t('orderDetail.quantityShort', { count: item.quantity })} {item.menuItem?.name ?? ''}
                     </Text>

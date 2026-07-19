@@ -3,12 +3,12 @@ import { Card } from '@/components/ui/card/card';
 import { Text } from '@/components/ui/text/text';
 import { useOrders } from '@/hooks/use-orders';
 import { formatCents, t } from '@/i18n';
-import { useTheme } from '@/theme/theme-provider';
+import { useStyles } from '@/styles/screens/sales.styles';
 import { orderTotal } from '@/types/order';
 
 /** Sales tab — today's paid orders summary (simple MVP view). */
 export default function SalesScreen() {
-  const theme = useTheme();
+  const styles = useStyles();
   const { orders } = useOrders('paid');
 
   const today = new Date();
@@ -28,16 +28,16 @@ export default function SalesScreen() {
   const revenue = paidToday.reduce((total, order) => total + orderTotal(order), 0);
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing.md, gap: theme.spacing.md }}>
+    <View style={styles.container}>
       <Text variant="subtitle">{t('sales.todayTitle')}</Text>
-      <View style={{ flexDirection: 'row', gap: theme.spacing.md }}>
-        <Card style={{ flex: 1 }}>
+      <View style={styles.summaryRow}>
+        <Card style={styles.summaryCard}>
           <Text variant="caption" color="muted">
             {t('sales.paidOrders')}
           </Text>
           <Text variant="title">{paidToday.length}</Text>
         </Card>
-        <Card style={{ flex: 1 }}>
+        <Card style={styles.summaryCard}>
           <Text variant="caption" color="muted">
             {t('sales.totalRevenue')}
           </Text>
@@ -47,10 +47,10 @@ export default function SalesScreen() {
       <FlatList
         data={paidToday}
         keyExtractor={(order) => order.id}
-        ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sm }} />}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
         renderItem={({ item }) => (
           <Card>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.saleRow}>
               <Text variant="body">
                 {item.table
                   ? `${t('orders.table')} ${String(item.table.number).padStart(2, '0')}`

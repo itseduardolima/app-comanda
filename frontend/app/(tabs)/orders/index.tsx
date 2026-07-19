@@ -9,7 +9,7 @@ import { Text } from '@/components/ui/text/text';
 import { useNow } from '@/hooks/use-now';
 import { useOrders } from '@/hooks/use-orders';
 import { t } from '@/i18n';
-import { useTheme } from '@/theme/theme-provider';
+import { useStyles } from '@/styles/screens/orders-list.styles';
 import { OrderListFilter } from '@/types/order';
 
 const FILTERS: { key: OrderListFilter; labelKey: 'orders.filterOpen' | 'orders.filterPaid' | 'orders.filterAll' }[] = [
@@ -26,28 +26,22 @@ const EMPTY_KEYS = {
 
 /** Screen 01 — Comandas with Abertas/Pagas/Todas filters (HU-04/HU-40). */
 export default function OrdersScreen() {
-  const theme = useTheme();
+  const styles = useStyles();
   const router = useRouter();
   const [filter, setFilter] = useState<OrderListFilter>('open');
   const { orders, loading, pendingSyncCount, refresh } = useOrders(filter);
   const now = useNow();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={['top']}>
-      <View style={{ flex: 1, padding: theme.spacing.md, gap: theme.spacing.md }}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <View style={styles.container}>
         <Text variant="title">{t('orders.title')}</Text>
         {pendingSyncCount > 0 ? (
-          <View
-            style={{
-              backgroundColor: theme.colors.warningSoft,
-              borderRadius: theme.radii.md,
-              padding: theme.spacing.sm,
-            }}
-          >
+          <View style={styles.offlineBanner}>
             <Text variant="caption">{t('common.offlineBanner')}</Text>
           </View>
         ) : null}
-        <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
+        <View style={styles.filterRow}>
           {FILTERS.map(({ key, labelKey }) => (
             <Chip key={key} label={t(labelKey)} selected={filter === key} onPress={() => setFilter(key)} />
           ))}
@@ -62,18 +56,18 @@ export default function OrdersScreen() {
               onPress={() => router.push({ pathname: '/orders/[id]', params: { id: item.id } })}
             />
           )}
-          ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sm }} />}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
           refreshControl={<RefreshControl refreshing={loading} onRefresh={() => void refresh()} />}
           ListEmptyComponent={
             loading ? null : (
-              <View style={{ paddingVertical: theme.spacing.xl, alignItems: 'center' }}>
+              <View style={styles.emptyState}>
                 <Text variant="body" color="muted" align="center">
                   {t(EMPTY_KEYS[filter])}
                 </Text>
               </View>
             )
           }
-          contentContainerStyle={{ paddingBottom: theme.spacing.xxl }}
+          contentContainerStyle={styles.listContent}
         />
         <Button onPress={() => router.push('/orders/new')} size="lg">
           {t('orders.newOrder')}

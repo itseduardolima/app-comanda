@@ -7,7 +7,7 @@ import { Text } from '@/components/ui/text/text';
 import { useOrderActions } from '@/hooks/use-orders';
 import { useTables } from '@/hooks/use-tables';
 import { t } from '@/i18n';
-import { useTheme } from '@/theme/theme-provider';
+import { useStyles } from '@/styles/screens/pick-table.styles';
 import { Table } from '@/types/table';
 
 /**
@@ -16,7 +16,7 @@ import { Table } from '@/types/table';
  * opening another order on the same table.
  */
 export default function PickTableScreen() {
-  const theme = useTheme();
+  const styles = useStyles();
   const router = useRouter();
   const { customerName } = useLocalSearchParams<{ customerName?: string }>();
   const { tables, tableOrders, loading, loadError, reload, loadTableOrders } = useTables();
@@ -46,9 +46,9 @@ export default function PickTableScreen() {
   const expandedOrders = expandedTableId ? (tableOrders[expandedTableId] ?? []) : [];
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing.md, gap: theme.spacing.md }}>
+    <View style={styles.screen}>
       {loadError ? (
-        <View style={{ alignItems: 'center', gap: theme.spacing.sm }}>
+        <View style={styles.errorState}>
           <Text variant="body" color="muted">
             {t('pickTable.loadError')}
           </Text>
@@ -61,8 +61,8 @@ export default function PickTableScreen() {
         data={tables}
         keyExtractor={(table) => table.id}
         numColumns={3}
-        columnWrapperStyle={{ gap: theme.spacing.sm }}
-        contentContainerStyle={{ gap: theme.spacing.sm, paddingBottom: theme.spacing.xl }}
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.listContent}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={() => void reload()} />}
         renderItem={({ item: table }) => {
           const free = table.status === 'free';
@@ -70,21 +70,11 @@ export default function PickTableScreen() {
             <Pressable
               accessibilityRole="button"
               onPress={() => handlePress(table)}
-              style={({ pressed }) => ({
-                flex: 1,
-                aspectRatio: 1,
-                borderRadius: theme.radii.lg,
-                borderWidth: 2,
-                borderColor: free ? theme.colors.success : theme.colors.warning,
-                backgroundColor: free
-                  ? pressed
-                    ? theme.colors.successSoft
-                    : theme.colors.surface
-                  : theme.colors.warningSoft,
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: theme.spacing.xs,
-              })}
+              style={({ pressed }) => [
+                styles.tableCard,
+                free ? styles.tableCardFree : styles.tableCardOccupied,
+                free && pressed && styles.tableCardFreePressed,
+              ]}
             >
               <Text variant="subtitle">{String(table.number).padStart(2, '0')}</Text>
               <Text variant="caption" color={free ? 'success' : 'muted'}>
@@ -95,7 +85,7 @@ export default function PickTableScreen() {
         }}
         ListFooterComponent={
           expandedTable ? (
-            <View style={{ gap: theme.spacing.sm, marginTop: theme.spacing.md }}>
+            <View style={styles.footerSection}>
               <Text variant="subtitle">
                 {t('pickTable.occupiedOrdersTitle', { number: String(expandedTable.number).padStart(2, '0') })}
               </Text>
@@ -104,7 +94,7 @@ export default function PickTableScreen() {
                   key={order.id}
                   onPress={() => router.push({ pathname: '/orders/[id]', params: { id: order.id } })}
                 >
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <View style={styles.orderRow}>
                     <Text variant="body">{order.customerName || t('orderDetail.title')}</Text>
                     <Text variant="caption" color="muted">
                       {order.items.length > 0 ? `${order.items.length}x` : ''}

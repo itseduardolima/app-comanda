@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input/input';
 import { Text } from '@/components/ui/text/text';
 import { useOrderActions } from '@/hooks/use-orders';
 import { t } from '@/i18n';
+import { useStyles } from '@/styles/screens/order-new.styles';
 import { useTheme } from '@/theme/theme-provider';
 import { OrderType } from '@/types/order';
 
@@ -19,6 +20,7 @@ const TYPE_OPTIONS: { type: OrderType; labelKey: 'orders.table' | 'orders.counte
 
 /** Screen 1A — Nova comanda: type + optional customer name (HU-05). */
 export default function NewOrderScreen() {
+  const styles = useStyles();
   const theme = useTheme();
   const router = useRouter();
   const { createOrderLocal } = useOrderActions();
@@ -41,23 +43,17 @@ export default function NewOrderScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing.md, gap: theme.spacing.lg }}>
-      <View style={{ gap: theme.spacing.sm }}>
+    <View style={styles.screen}>
+      <View style={styles.section}>
         <Text variant="subtitle">{t('newOrder.typeLabel')}</Text>
-        <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
+        <View style={styles.typeRow}>
           {TYPE_OPTIONS.map((option) => {
             const selected = type === option.type;
             return (
               <Card
                 key={option.type}
                 onPress={() => setType(option.type)}
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  gap: theme.spacing.sm,
-                  borderColor: selected ? theme.colors.primary : theme.colors.border,
-                  borderWidth: 2,
-                }}
+                style={[styles.typeCard, selected && styles.typeCardSelected]}
               >
                 <Ionicons
                   name={option.icon}

@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button/button';
 import { Text } from '@/components/ui/text/text';
 import { useAuth } from '@/hooks/use-auth';
 import { t } from '@/i18n';
-import { useTheme } from '@/theme/theme-provider';
+import { useStyles } from '@/styles/screens/pin-create.styles';
 import { ApiError } from '@/types/errors';
 
 /** Screen 00A — first access: define and confirm a 4-digit PIN (HU-15). */
 export default function PinCreateScreen() {
-  const theme = useTheme();
+  const styles = useStyles();
   const router = useRouter();
   const { createPin } = useAuth();
   const { operatorId, username } = useLocalSearchParams<{ operatorId: string; username: string }>();
@@ -49,9 +49,9 @@ export default function PinCreateScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <View style={{ flex: 1, justifyContent: 'center', padding: theme.spacing.lg, gap: theme.spacing.lg }}>
-        <View style={{ alignItems: 'center', gap: theme.spacing.xs }}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
           <Text variant="title">{t('auth.createPinTitle')}</Text>
           <Text variant="body" color="muted" align="center">
             {firstPin === null ? t('auth.createPinSubtitle') : t('auth.confirmPinSubtitle')}

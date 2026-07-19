@@ -8,7 +8,7 @@ import { Text } from '@/components/ui/text/text';
 import { useMenu } from '@/hooks/use-menu';
 import { useOrderActions, useOrderOptional } from '@/hooks/use-orders';
 import { formatCents, t } from '@/i18n';
-import { useTheme } from '@/theme/theme-provider';
+import { useStyles } from '@/styles/screens/customize-item.styles';
 import { MeatPoint, OrderItemModifiers } from '@/types/order';
 
 const MEAT_POINTS: { value: MeatPoint; labelKey: 'customize.pointRare' | 'customize.pointMedium' | 'customize.pointWellDone' }[] = [
@@ -23,7 +23,7 @@ const MEAT_POINTS: { value: MeatPoint; labelKey: 'customize.pointRare' | 'custom
  * the item (or saves edits) with modifiers in the contract shape.
  */
 export default function CustomizeItemScreen() {
-  const theme = useTheme();
+  const styles = useStyles();
   const router = useRouter();
   const { id, menuItemId, itemId } = useLocalSearchParams<{
     id: string;
@@ -61,7 +61,7 @@ export default function CustomizeItemScreen() {
 
   if (!menuItem) {
     return (
-      <View style={{ flex: 1, backgroundColor: theme.colors.background, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={styles.loadingState}>
         <Text variant="body" color="muted">
           {t('common.loading')}
         </Text>
@@ -101,9 +101,9 @@ export default function CustomizeItemScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <ScrollView contentContainerStyle={{ padding: theme.spacing.md, gap: theme.spacing.lg }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <View style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.headerRow}>
           <Text variant="subtitle">{menuItem.name}</Text>
           <Text variant="subtitle" color="primary">
             {formatCents(unitPrice)}
@@ -111,9 +111,9 @@ export default function CustomizeItemScreen() {
         </View>
 
         {customization?.removableIngredients?.length ? (
-          <View style={{ gap: theme.spacing.sm }}>
+          <View style={styles.section}>
             <Text variant="body">{t('customize.removeSection')}</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+            <View style={styles.chipRow}>
               {customization.removableIngredients.map((name) => (
                 <Chip
                   key={name}
@@ -127,9 +127,9 @@ export default function CustomizeItemScreen() {
         ) : null}
 
         {customization?.extraIngredients?.length ? (
-          <View style={{ gap: theme.spacing.sm }}>
+          <View style={styles.section}>
             <Text variant="body">{t('customize.addSection')}</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+            <View style={styles.chipRow}>
               {customization.extraIngredients.map((extra) => (
                 <Chip
                   key={extra.name}
@@ -143,9 +143,9 @@ export default function CustomizeItemScreen() {
         ) : null}
 
         {customization?.meatPoint ? (
-          <View style={{ gap: theme.spacing.sm }}>
+          <View style={styles.section}>
             <Text variant="body">{t('customize.pointSection')}</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+            <View style={styles.chipRow}>
               {MEAT_POINTS.map((option) => (
                 <Chip
                   key={option.value}
@@ -166,9 +166,9 @@ export default function CustomizeItemScreen() {
           multiline
         />
 
-        <View style={{ gap: theme.spacing.sm }}>
+        <View style={styles.section}>
           <Text variant="body">{t('customize.quantityLabel')}</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md }}>
+          <View style={styles.quantityRow}>
             <Button variant="secondary" size="sm" onPress={() => setQuantity(Math.max(1, quantity - 1))}>
               −
             </Button>
@@ -180,7 +180,7 @@ export default function CustomizeItemScreen() {
         </View>
       </ScrollView>
 
-      <View style={{ padding: theme.spacing.md, gap: theme.spacing.sm, borderTopWidth: 1, borderTopColor: theme.colors.border }}>
+      <View style={styles.footer}>
         <Button size="lg" onPress={handleConfirm}>
           {existingItem ? t('customize.confirmSave') : t('customize.confirmAdd')} · {formatCents(unitPrice * quantity)}
         </Button>

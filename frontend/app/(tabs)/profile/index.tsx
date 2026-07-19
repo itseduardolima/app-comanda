@@ -4,10 +4,12 @@ import { Card } from '@/components/ui/card/card';
 import { Text } from '@/components/ui/text/text';
 import { useAuth } from '@/hooks/use-auth';
 import { t } from '@/i18n';
+import { useStyles } from '@/styles/screens/profile.styles';
 import { useTheme } from '@/theme/theme-provider';
 
 /** Profile tab — operator info and logout (HU-17). */
 export default function ProfileScreen() {
+  const styles = useStyles();
   const theme = useTheme();
   const { operator, logout } = useAuth();
 
@@ -19,19 +21,10 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing.md, gap: theme.spacing.md }}>
+    <View style={styles.container}>
       <Card>
-        <View style={{ alignItems: 'center', gap: theme.spacing.sm, paddingVertical: theme.spacing.md }}>
-          <View
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: theme.radii.pill,
-              backgroundColor: theme.colors.primary,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+        <View style={styles.identity}>
+          <View style={styles.avatar}>
             <Text variant="title" color="onPrimary">
               {(operator?.name ?? '?').slice(0, 1).toUpperCase()}
             </Text>

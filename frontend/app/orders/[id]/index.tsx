@@ -9,6 +9,7 @@ import { useKitchenSocket } from '@/hooks/use-kitchen-socket';
 import { useOrder, useOrderActions } from '@/hooks/use-orders';
 import { useReceipt } from '@/hooks/use-receipt';
 import { formatCents, t } from '@/i18n';
+import { useStyles } from '@/styles/screens/order-detail.styles';
 import { useTheme } from '@/theme/theme-provider';
 import { ApiError, NetworkError } from '@/types/errors';
 import { isLocalId, OrderItem, orderTotal } from '@/types/order';
@@ -43,6 +44,7 @@ function modifiersSummary(item: OrderItem): string | null {
  * add items, send to kitchen and close order (HU-09/HU-39/HU-42). */
 export default function OrderDetailScreen() {
   const theme = useTheme();
+  const styles = useStyles();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { order } = useOrder(id);
@@ -54,7 +56,7 @@ export default function OrderDetailScreen() {
 
   if (!order) {
     return (
-      <View style={{ flex: 1, backgroundColor: theme.colors.background, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={styles.loadingScreen}>
         <Text variant="body" color="muted">
           {t('common.loading')}
         </Text>
@@ -123,9 +125,9 @@ export default function OrderDetailScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <ScrollView contentContainerStyle={{ padding: theme.spacing.md, gap: theme.spacing.md }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <View style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.headerRow}>
           <Text variant="subtitle">{title}</Text>
           <Badge variant={isPaid ? 'paid' : 'unpaid'} />
         </View>
@@ -152,9 +154,9 @@ export default function OrderDetailScreen() {
             const editable = !item.kitchenTicketId && !isPaid;
             return (
               <Card key={item.id}>
-                <View style={{ gap: theme.spacing.sm }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ flexShrink: 1 }}>
+                <View style={styles.itemBody}>
+                  <View style={styles.itemRow}>
+                    <View style={styles.itemInfo}>
                       <Text variant="body">
                         {t('orderDetail.quantityShort', { count: item.quantity })} {item.menuItem?.name ?? ''}
                       </Text>
@@ -166,7 +168,7 @@ export default function OrderDetailScreen() {
                     </View>
                     <Text variant="body">{formatCents(item.quantity * item.finalPrice)}</Text>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm }}>
+                  <View style={styles.itemStatusRow}>
                     <Badge variant={item.kitchenStatus} />
                     {isLocalId(item.id) ? (
                       <Text variant="caption" color="muted">
@@ -175,8 +177,8 @@ export default function OrderDetailScreen() {
                     ) : null}
                   </View>
                   {editable ? (
-                    <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
-                      <View style={{ flex: 1 }}>
+                    <View style={styles.itemActions}>
+                      <View style={styles.actionSlot}>
                         <Button
                           variant="secondary"
                           size="sm"
@@ -190,7 +192,7 @@ export default function OrderDetailScreen() {
                           {t('orderDetail.editItem')}
                         </Button>
                       </View>
-                      <View style={{ flex: 1 }}>
+                      <View style={styles.actionSlot}>
                         <Button variant="danger" size="sm" onPress={() => removeItemLocal(order.id, item.id)}>
                           {t('orderDetail.removeItem')}
                         </Button>
@@ -208,7 +210,7 @@ export default function OrderDetailScreen() {
         )}
 
         <Card>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={styles.totalRow}>
             <Text variant="subtitle">{t('orderDetail.total')}</Text>
             <Text variant="subtitle" color="primary">
               {formatCents(total)}
@@ -217,10 +219,10 @@ export default function OrderDetailScreen() {
         </Card>
       </ScrollView>
 
-      <View style={{ padding: theme.spacing.md, gap: theme.spacing.sm, borderTopWidth: 1, borderTopColor: theme.colors.border }}>
+      <View style={styles.footer}>
         {!isPaid ? (
-          <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
-            <View style={{ flex: 1 }}>
+          <View style={styles.footerRow}>
+            <View style={styles.actionSlot}>
               <Button
                 variant="secondary"
                 onPress={() => router.push({ pathname: '/(tabs)/menu', params: { orderId: order.id } })}
@@ -229,13 +231,13 @@ export default function OrderDetailScreen() {
               </Button>
             </View>
             {hasUnsentItems && order.items.length > 0 ? (
-              <View style={{ flex: 1 }}>
+              <View style={styles.actionSlot}>
                 <Button onPress={() => void handleSend()} loading={sending}>
                   {t('orderDetail.sendToKitchen')}
                 </Button>
               </View>
             ) : hasSentItems ? (
-              <View style={{ flex: 1 }}>
+              <View style={styles.actionSlot}>
                 <Button
                   variant="secondary"
                   onPress={() => router.push({ pathname: '/orders/[id]/kitchen', params: { id: order.id } })}
