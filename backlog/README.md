@@ -2,7 +2,7 @@
 
 > Backlog de produto organizado em **Histórias de Usuário (HU)**, separadas por **sprints**, seguindo Scrum.
 > Cada HU vive em um arquivo `.md` próprio dentro da pasta do seu sprint.
-> Base: [`../PLANEJAMENTO.md`](../PLANEJAMENTO.md) (roadmap de fases) e [`../.specs/`](../.specs/) (contrato técnico — fonte da verdade de comportamento).
+> Base: [`../PROXIMOS-PASSOS.md`](../PROXIMOS-PASSOS.md) (ordem e risco pós-MVP) e [`../.specs/`](../.specs/) (contrato técnico — fonte da verdade de comportamento).
 >
 > **Convenção de numeração**: HUs numeradas sequencialmente `HU-01` a `HU-48`, únicas em todo o backlog (não reiniciam por sprint).
 > **Estimativa**: story points em escala Fibonacci (1, 2, 3, 5, 8).
