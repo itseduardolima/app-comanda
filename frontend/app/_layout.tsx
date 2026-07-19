@@ -9,6 +9,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { PhoneFrame } from '@/components/phone-frame/phone-frame';
 import { useAuth } from '@/hooks/use-auth';
 import { t } from '@/i18n';
 import { ThemeProvider, useTheme } from '@/theme/theme-provider';
@@ -78,7 +79,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <StatusBar style="dark" />
-      <RootStack />
+      <PhoneFrame>
+        <RootStack />
+      </PhoneFrame>
     </ThemeProvider>
   );
 }

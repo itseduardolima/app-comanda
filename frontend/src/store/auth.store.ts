@@ -22,16 +22,37 @@ interface AuthState {
   logout(): Promise<void>;
 }
 
+interface SessionStorage {
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string): Promise<void>;
+  remove(key: string): Promise<void>;
+}
+
 /**
  * JWT lives in the device secure storage (expo-secure-store), never plain
- * AsyncStorage (HU-18). SecureStore is unavailable on web — there the
- * session is memory-only, which is fine for the dev/preview web target.
+ * AsyncStorage (HU-18).
+ *
+ * `expo-secure-store` has no web implementation, so the web target falls back
+ * to `localStorage` — enough to survive a page reload while developing. It is
+ * deliberately weaker than the native path (any XSS on the page can read it),
+ * which is acceptable only because web is a dev/preview target: the shipped
+ * app is Android/iOS. Do not promote web to production without replacing this
+ * with an httpOnly cookie issued by the API.
  */
-async function secureStore(): Promise<typeof import('expo-secure-store') | null> {
+async function sessionStorage(): Promise<SessionStorage> {
   if (Platform.OS === 'web') {
-    return null;
+    return {
+      get: (key) => Promise.resolve(globalThis.localStorage?.getItem(key) ?? null),
+      set: (key, value) => Promise.resolve(globalThis.localStorage?.setItem(key, value)),
+      remove: (key) => Promise.resolve(globalThis.localStorage?.removeItem(key)),
+    };
   }
-  return import('expo-secure-store');
+  const secure = await import('expo-secure-store');
+  return {
+    get: (key) => secure.getItemAsync(key),
+    set: (key, value) => secure.setItemAsync(key, value),
+    remove: (key) => secure.deleteItemAsync(key),
+  };
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -41,17 +62,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   async hydrate() {
     try {
-      const store = await secureStore();
-      if (store) {
-        const [token, operatorJson] = await Promise.all([
-          store.getItemAsync(TOKEN_KEY),
-          store.getItemAsync(OPERATOR_KEY),
-        ]);
-        if (token && operatorJson) {
-          setAuthToken(token);
-          connectSocket(token);
-          set({ token, operator: JSON.parse(operatorJson) as OperatorSession });
-        }
+      const store = await sessionStorage();
+      const [token, operatorJson] = await Promise.all([
+        store.get(TOKEN_KEY),
+        store.get(OPERATOR_KEY),
+      ]);
+      if (token && operatorJson) {
+        setAuthToken(token);
+        connectSocket(token);
+        set({ token, operator: JSON.parse(operatorJson) as OperatorSession });
       }
     } finally {
       set({ hydrated: true });
@@ -62,26 +81,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     setAuthToken(auth.accessToken);
     connectSocket(auth.accessToken);
     set({ token: auth.accessToken, operator: auth.operator });
-    const store = await secureStore();
-    if (store) {
-      await Promise.all([
-        store.setItemAsync(TOKEN_KEY, auth.accessToken),
-        store.setItemAsync(OPERATOR_KEY, JSON.stringify(auth.operator)),
-      ]);
-    }
+    const store = await sessionStorage();
+    await Promise.all([
+      store.set(TOKEN_KEY, auth.accessToken),
+      store.set(OPERATOR_KEY, JSON.stringify(auth.operator)),
+    ]);
   },
 
   async logout() {
     disconnectSocket();
     setAuthToken(null);
     set({ token: null, operator: null });
-    const store = await secureStore();
-    if (store) {
-      await Promise.all([
-        store.deleteItemAsync(TOKEN_KEY),
-        store.deleteItemAsync(OPERATOR_KEY),
-      ]);
-    }
+    const store = await sessionStorage();
+    await Promise.all([store.remove(TOKEN_KEY), store.remove(OPERATOR_KEY)]);
   },
 }));
 
