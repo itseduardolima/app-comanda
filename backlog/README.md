@@ -4,7 +4,7 @@
 > Cada HU vive em um arquivo `.md` próprio dentro da pasta do seu sprint.
 > Base: [`../PROXIMOS-PASSOS.md`](../PROXIMOS-PASSOS.md) (ordem e risco pós-MVP) e [`../.specs/`](../.specs/) (contrato técnico — fonte da verdade de comportamento).
 >
-> **Convenção de numeração**: HUs numeradas sequencialmente `HU-01` a `HU-48`, únicas em todo o backlog (não reiniciam por sprint).
+> **Convenção de numeração**: HUs numeradas sequencialmente `HU-01` a `HU-62`, únicas em todo o backlog (não reiniciam por sprint).
 > **Estimativa**: story points em escala Fibonacci (1, 2, 3, 5, 8).
 > **Idioma**: HUs escritas em português (artefato de produto/negócio); código e specs técnicas seguem a convenção do repo (código em inglês — ver `.specs/05-padroes-de-codigo.md`).
 
@@ -18,6 +18,8 @@
 | [Sprint 4 — Cozinha em tempo real](sprint-4-cozinha-tempo-real/) | Status de cozinha por item atualiza via WebSocket, com reconexão resiliente. | Fase 4 |
 | [Sprint 5 — Fechar conta](sprint-5-fechar-conta/) | Operador fecha a conta (marca paga), mesa libera, comanda migra para aba Pagas. | Fase 5 |
 | [Sprint 6 — Produção & publicação](sprint-6-producao-publicacao/) | App publicado nas duas lojas, testado em campo, com monitoramento de erros. | Fase 6 |
+| [Sprint 7 — Estados & movimento](sprint-7-estados-e-movimento/) | O app deixa de mostrar "Carregando…" e frases secas: skeletons, estados vazios ilustrados, confirmação própria e microinterações. | Fase 7 |
+| [Sprint 8 — KDS & escala](sprint-8-kds-e-escala/) | A cozinha ganha tela própria e a listagem de comandas para de crescer sem limite. | Fase 8 |
 
 > Fase 0 (validação de UX / protótipo) já está concluída — não gera HUs.
 
@@ -127,3 +129,27 @@ Como **<papel>**, quero **<capacidade>**, para que **<benefício>**.
 - [ ] Spec em `.specs/` atualizada, se o comportamento mudou
 - [ ] Nenhuma lógica de pagamento/cobrança introduzida
 ```
+
+### Sprint 7 — Estados & movimento (Frontend)
+
+| HU | Título | Camada | Pontos | Status |
+|---|---|---|---|---|
+| [HU-49](sprint-7-estados-e-movimento/HU-49-infra-ilustracao-e-movimento.md) | Infraestrutura de ilustração e movimento | Frontend | 3 | Não feita |
+| [HU-50](sprint-7-estados-e-movimento/HU-50-skeleton-listas.md) | Componente Skeleton e aplicação nas listas | Frontend | 5 | Não feita |
+| [HU-51](sprint-7-estados-e-movimento/HU-51-botao-carregando-e-sincronizacao.md) | Botão em carregamento e indicador de sincronização | Frontend | 3 | Não feita |
+| [HU-52](sprint-7-estados-e-movimento/HU-52-empty-state-com-ilustracao.md) | Componente EmptyState com ilustração | Frontend | 8 | Não feita |
+| [HU-53](sprint-7-estados-e-movimento/HU-53-confirm-sheet-substitui-alert.md) | Componente de confirmação substituindo o Alert nativo | Frontend | 8 | Não feita |
+| [HU-54](sprint-7-estados-e-movimento/HU-54-toast-feedback-efemero.md) | Toast de feedback efêmero | Frontend | 5 | Não feita |
+| [HU-55](sprint-7-estados-e-movimento/HU-55-microinteracoes.md) | Microinterações | Frontend | 8 | Não feita |
+| [HU-56](sprint-7-estados-e-movimento/HU-56-densidade-e-limites-de-layout.md) | Densidade e limites de layout | Frontend | 5 | Não feita |
+
+### Sprint 8 — KDS & escala
+
+| HU | Título | Camada | Pontos | Status |
+|---|---|---|---|---|
+| [HU-57](sprint-8-kds-e-escala/HU-57-backend-paginacao-recorte-por-dia-orders.md) | Backend: paginação e recorte por dia na listagem de comandas | Backend | 5 | Não feita |
+| [HU-58](sprint-8-kds-e-escala/HU-58-app-lista-comandas-recorte-temporal.md) | App: lista de comandas com recorte temporal e carregamento incremental | Frontend | 5 | Não feita |
+| [HU-59](sprint-8-kds-e-escala/HU-59-app-telas-erro-servidor.md) | App: telas de erro de servidor | Frontend | 3 | Não feita |
+| [HU-60](sprint-8-kds-e-escala/HU-60-backend-acesso-dispositivo-cozinha.md) | Backend: acesso do dispositivo de cozinha ao KDS | Backend | 5 | Não feita |
+| [HU-61](sprint-8-kds-e-escala/HU-61-kds-fila-de-tickets-por-estagio.md) | KDS: fila de tickets por estágio | Frontend | 8 | Não feita |
+| [HU-62](sprint-8-kds-e-escala/HU-62-kds-avanco-de-estagio-e-tempo-real.md) | KDS: avanço de estágio e resiliência em tempo real | Fullstack | 5 | Não feita |
