@@ -6,6 +6,7 @@
  * Under Jest, localStore is the in-memory implementation (NODE_ENV=test).
  */
 import { NetworkError } from '../api/client';
+import * as kitchenApi from '../api/kitchen';
 import * as ordersApi from '../api/orders';
 import { localStore } from '../db/schema';
 import { drain, pendingCount } from '../db/sync-queue';
@@ -14,8 +15,10 @@ import { Order, OrderItem } from '../types/order';
 import { isLocalId, useOrdersStore } from './orders.store';
 
 jest.mock('../api/orders');
+jest.mock('../api/kitchen');
 
 const mockedApi = jest.mocked(ordersApi);
+const mockedKitchenApi = jest.mocked(kitchenApi);
 
 /** Lets pending promise chains (automatic drains) settle. */
 async function flush(): Promise<void> {
@@ -226,7 +229,122 @@ describe('orders store — WebSocket deltas (HU-32)', () => {
     useOrdersStore.setState({ orders: { [order.id]: order } });
   }
 
-  it('applyOrderUpdated applies a close/payment delta without any REST call', async () => {
+  /** Every event below must land purely from its payload. */
+  function expectNoRestCall(): void {
+    expect(mockedApi.getOrder).not.toHaveBeenCalled();
+    expect(mockedApi.listOrders).not.toHaveBeenCalled();
+    expect(mockedKitchenApi.listTickets).not.toHaveBeenCalled();
+  }
+
+  it('applyOrderUpdated — item_added appends the item without any REST call', async () => {
+    seed(serverOrder('srv-10'));
+
+    useOrdersStore.getState().applyOrderUpdated({
+      orderId: 'srv-10',
+      paymentStatus: 'unpaid',
+      change: { kind: 'item_added', item: serverItem('item-1', 'srv-10', { menuItem: burger }) },
+    });
+    await flush();
+
+    const order = useOrdersStore.getState().getOrder('srv-10');
+    expect(order?.items.map((item) => item.id)).toEqual(['item-1']);
+    expect(order?.items[0].menuItem?.name).toBe('X-Burger');
+    expectNoRestCall();
+    // Offline-first: the delta is persisted locally too.
+    expect(localStore.getOrders().find((cached) => cached.id === 'srv-10')?.items).toHaveLength(1);
+  });
+
+  it('applyOrderUpdated — item_added replaces instead of duplicating an item already known', async () => {
+    seed(serverOrder('srv-10', { items: [serverItem('item-1', 'srv-10', { quantity: 1 })] }));
+
+    useOrdersStore.getState().applyOrderUpdated({
+      orderId: 'srv-10',
+      paymentStatus: 'unpaid',
+      change: { kind: 'item_added', item: serverItem('item-1', 'srv-10', { quantity: 3 }) },
+    });
+    await flush();
+
+    const order = useOrdersStore.getState().getOrder('srv-10');
+    expect(order?.items).toHaveLength(1);
+    expect(order?.items[0].quantity).toBe(3);
+    expectNoRestCall();
+  });
+
+  it('applyOrderUpdated — item_updated replaces the item by id without any REST call', async () => {
+    seed(
+      serverOrder('srv-10', {
+        items: [serverItem('item-1', 'srv-10'), serverItem('item-2', 'srv-10')],
+      }),
+    );
+
+    useOrdersStore.getState().applyOrderUpdated({
+      orderId: 'srv-10',
+      paymentStatus: 'unpaid',
+      change: {
+        kind: 'item_updated',
+        item: serverItem('item-2', 'srv-10', { quantity: 5, finalPrice: 3000 }),
+      },
+    });
+    await flush();
+
+    const items = useOrdersStore.getState().getOrder('srv-10')?.items ?? [];
+    expect(items).toHaveLength(2);
+    expect(items[1]).toMatchObject({ id: 'item-2', quantity: 5, finalPrice: 3000 });
+    expect(items[0].quantity).toBe(1);
+    expectNoRestCall();
+  });
+
+  it('applyOrderUpdated — item_removed drops the item by id without any REST call', async () => {
+    seed(
+      serverOrder('srv-10', {
+        items: [serverItem('item-1', 'srv-10'), serverItem('item-2', 'srv-10')],
+      }),
+    );
+
+    useOrdersStore.getState().applyOrderUpdated({
+      orderId: 'srv-10',
+      paymentStatus: 'unpaid',
+      change: { kind: 'item_removed', itemId: 'item-1' },
+    });
+    await flush();
+
+    expect(useOrdersStore.getState().getOrder('srv-10')?.items.map((item) => item.id)).toEqual([
+      'item-2',
+    ]);
+    expectNoRestCall();
+  });
+
+  it('applyOrderUpdated — items_queued patches the sent items in bulk without any REST call', async () => {
+    seed(
+      serverOrder('srv-10', {
+        items: [
+          serverItem('item-1', 'srv-10', { kitchenStatus: 'delivered' }),
+          serverItem('item-2', 'srv-10', { kitchenStatus: 'delivered' }),
+          serverItem('item-3', 'srv-10', { kitchenStatus: 'delivered' }),
+        ],
+      }),
+    );
+
+    useOrdersStore.getState().applyOrderUpdated({
+      orderId: 'srv-10',
+      paymentStatus: 'unpaid',
+      change: {
+        kind: 'items_queued',
+        items: [
+          serverItem('item-1', 'srv-10', { kitchenStatus: 'queued', kitchenTicketId: 'ticket-1' }),
+          serverItem('item-3', 'srv-10', { kitchenStatus: 'queued', kitchenTicketId: 'ticket-1' }),
+        ],
+      },
+    });
+    await flush();
+
+    const items = useOrdersStore.getState().getOrder('srv-10')?.items ?? [];
+    expect(items.map((item) => item.kitchenTicketId)).toEqual(['ticket-1', null, 'ticket-1']);
+    expect(items.map((item) => item.kitchenStatus)).toEqual(['queued', 'delivered', 'queued']);
+    expectNoRestCall();
+  });
+
+  it('applyOrderUpdated — order_closed applies payment/close fields without any REST call', async () => {
     seed(serverOrder('srv-10', { paymentStatus: 'unpaid', tableId: 'table-1' }));
 
     useOrdersStore.getState().applyOrderUpdated({
@@ -235,6 +353,7 @@ describe('orders store — WebSocket deltas (HU-32)', () => {
       tableId: null,
       tableStatus: 'free',
       closedAt: '2026-07-18T14:00:00.000Z',
+      change: { kind: 'order_closed' },
     });
     await flush();
 
@@ -242,29 +361,44 @@ describe('orders store — WebSocket deltas (HU-32)', () => {
     expect(order?.paymentStatus).toBe('paid');
     expect(order?.closedAt).toBe('2026-07-18T14:00:00.000Z');
     expect(order?.tableId).toBeNull();
-    // The heart of the criterion: the delta alone updated the store.
-    expect(mockedApi.getOrder).not.toHaveBeenCalled();
-    expect(mockedApi.listOrders).not.toHaveBeenCalled();
-    // Offline-first: the delta is persisted locally too.
+    expectNoRestCall();
     expect(localStore.getOrders().find((cached) => cached.id === 'srv-10')?.paymentStatus).toBe(
       'paid',
     );
   });
 
-  it('applyOrderUpdated refetches only when nothing about payment changed (items may have)', async () => {
-    seed(serverOrder('srv-11', { paymentStatus: 'unpaid' }));
+  it('applyOrderUpdated — order_created leaves a locally known order untouched, with no REST call', async () => {
+    const seeded = serverOrder('srv-10', { items: [serverItem('item-1', 'srv-10')] });
+    seed(seeded);
+
+    useOrdersStore.getState().applyOrderUpdated({
+      orderId: 'srv-10',
+      paymentStatus: 'unpaid',
+      change: { kind: 'order_created' },
+    });
+    await flush();
+
+    expect(useOrdersStore.getState().getOrder('srv-10')).toEqual(seeded);
+    expectNoRestCall();
+  });
+
+  it('applyOrderUpdated refetches only for an order unknown on this device (no baseline)', async () => {
     mockedApi.getOrder.mockResolvedValue(
       serverOrder('srv-11', { items: [serverItem('item-1', 'srv-11')] }),
     );
 
-    useOrdersStore.getState().applyOrderUpdated({ orderId: 'srv-11', paymentStatus: 'unpaid' });
+    useOrdersStore.getState().applyOrderUpdated({
+      orderId: 'srv-11',
+      paymentStatus: 'unpaid',
+      change: { kind: 'item_added', item: serverItem('item-1', 'srv-11') },
+    });
     await flush();
 
     expect(mockedApi.getOrder).toHaveBeenCalledWith('srv-11');
     expect(useOrdersStore.getState().getOrder('srv-11')?.items).toHaveLength(1);
   });
 
-  it('applyOrderUpdated resolves local ids and skips the refetch for unknown local orders', async () => {
+  it('applyOrderUpdated resolves local ids through the alias map, with no REST call', async () => {
     useOrdersStore.setState({
       orders: { 'srv-12': serverOrder('srv-12') },
       aliases: { 'local-order-x': 'srv-12' },
@@ -274,26 +408,50 @@ describe('orders store — WebSocket deltas (HU-32)', () => {
       orderId: 'local-order-x',
       paymentStatus: 'paid',
       closedAt: '2026-07-18T15:00:00.000Z',
+      change: { kind: 'order_closed' },
     });
     await flush();
 
     expect(useOrdersStore.getState().getOrder('srv-12')?.paymentStatus).toBe('paid');
-    expect(mockedApi.getOrder).not.toHaveBeenCalled();
+    expectNoRestCall();
+  });
+
+  it('applyTicketCreated stores the ticket from the payload, with no REST call', async () => {
+    seed(serverOrder('srv-13'));
+    const ticket = {
+      id: 'ticket-2',
+      orderId: 'srv-13',
+      number: 8,
+      createdAt: '2026-07-18T13:30:00.000Z',
+      items: [serverItem('item-1', 'srv-13')],
+    };
+
+    useOrdersStore.getState().applyTicketCreated({ orderId: 'srv-13', ticketNumber: 8, ticket });
+    await flush();
+
+    expect(useOrdersStore.getState().tickets['srv-13']).toEqual([ticket]);
+    expectNoRestCall();
   });
 
   it('applyTicketCreated ignores a ticket number already known locally', async () => {
     seed(serverOrder('srv-13'));
-    useOrdersStore.setState({
-      tickets: {
-        'srv-13': [
-          { id: 'ticket-1', orderId: 'srv-13', number: 7, createdAt: '2026-07-18T13:00:00.000Z', items: [] },
-        ],
-      },
-    });
+    const known = {
+      id: 'ticket-1',
+      orderId: 'srv-13',
+      number: 7,
+      createdAt: '2026-07-18T13:00:00.000Z',
+      items: [],
+    };
+    useOrdersStore.setState({ tickets: { 'srv-13': [known] } });
 
-    useOrdersStore.getState().applyTicketCreated({ orderId: 'srv-13', ticketNumber: 7 });
+    useOrdersStore.getState().applyTicketCreated({
+      orderId: 'srv-13',
+      ticketNumber: 7,
+      ticket: { ...known, id: 'ticket-duplicate' },
+    });
     await flush();
 
-    expect(mockedApi.getOrder).not.toHaveBeenCalled();
+    expect(useOrdersStore.getState().tickets['srv-13']).toEqual([known]);
+    expectNoRestCall();
   });
 });

@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { MenuItem, Prisma, TableStatus } from '@prisma/client';
-import { KitchenGateway } from '../kitchen/kitchen.gateway';
+import { KitchenGateway, OrderChange } from '../kitchen/kitchen.gateway';
 import { KitchenService, TicketWithItems } from '../kitchen/kitchen.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TablesService } from '../tables/tables.service';
@@ -74,6 +74,7 @@ export class OrdersService {
         paymentStatus: order.paymentStatus,
         tableId: order.tableId,
         tableStatus,
+        change: { kind: 'order_created' },
       });
     }
     return order;
@@ -119,7 +120,10 @@ export class OrdersService {
       include: { menuItem: true },
     });
 
-    this.emitOrderChanged(order.id, order.paymentStatus, order.tableId);
+    this.emitOrderChanged(order.id, order.paymentStatus, order.tableId, {
+      kind: 'item_added',
+      item,
+    });
     return item;
   }
 
@@ -152,7 +156,10 @@ export class OrdersService {
       include: { menuItem: true },
     });
 
-    this.emitOrderChanged(order.id, order.paymentStatus, order.tableId);
+    this.emitOrderChanged(order.id, order.paymentStatus, order.tableId, {
+      kind: 'item_updated',
+      item: updated,
+    });
     return updated;
   }
 
@@ -160,7 +167,10 @@ export class OrdersService {
     const order = await this.requireUnpaidOrder(orderId);
     await this.requireEditableItem(orderId, itemId);
     await this.prisma.orderItem.delete({ where: { id: itemId } });
-    this.emitOrderChanged(order.id, order.paymentStatus, order.tableId);
+    this.emitOrderChanged(order.id, order.paymentStatus, order.tableId, {
+      kind: 'item_removed',
+      itemId,
+    });
   }
 
   /**
@@ -206,6 +216,7 @@ export class OrdersService {
       tableId: closed.tableId,
       tableStatus,
       closedAt: closed.closedAt?.toISOString() ?? null,
+      change: { kind: 'order_closed' },
     });
     return closed;
   }
@@ -273,7 +284,8 @@ export class OrdersService {
     orderId: string,
     paymentStatus: OrderWithDetails['paymentStatus'],
     tableId: string | null,
+    change: OrderChange,
   ): void {
-    this.kitchenGateway.emitOrderUpdated({ orderId, paymentStatus, tableId });
+    this.kitchenGateway.emitOrderUpdated({ orderId, paymentStatus, tableId, change });
   }
 }

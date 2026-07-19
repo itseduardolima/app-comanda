@@ -99,8 +99,46 @@ Canal WS servido pelo backend (`@nestjs/websockets`). Autenticação com o **mes
 | Evento | Payload | Quando |
 |---|---|---|
 | `item.status.changed` | `{ orderId, itemId, kitchenStatus, changedAt }` | `PATCH /kitchen/items/:itemId` muda status |
-| `order.updated` | `{ orderId, paymentStatus, tableId?, tableStatus?, closedAt? }` | Comanda criada em mesa, item adicionado/editado/removido, comanda fechada |
-| `kitchen.ticket.created` | `{ orderId, ticketNumber }` | `send-to-kitchen` gera ticket |
+| `order.updated` | `{ orderId, paymentStatus, tableId?, tableStatus?, closedAt?, change }` | Comanda criada em mesa, item adicionado/editado/removido, itens enviados à cozinha, comanda fechada |
+| `kitchen.ticket.created` | `{ orderId, ticketNumber, ticket }` | `send-to-kitchen` gera ticket |
+
+Os eventos são **auto-suficientes**: carregam o delta completo, então o cliente aplica a mudança **sem nenhuma chamada REST** (HU-32). O REST continua sendo só o baseline/ressync.
+
+`order.updated.change` é o discriminador do delta:
+
+```ts
+type OrderChange =
+  | { kind: 'item_added';   item: OrderItem }    // item com menuItem incluído
+  | { kind: 'item_updated'; item: OrderItem }
+  | { kind: 'item_removed'; itemId: string }
+  | { kind: 'items_queued'; items: OrderItem[] } // send-to-kitchen: itens viraram queued
+  | { kind: 'order_created' }
+  | { kind: 'order_closed' };
+```
+
+```jsonc
+// order.updated — item adicionado
+{
+  "orderId": "…", "paymentStatus": "unpaid", "tableId": "…",
+  "change": {
+    "kind": "item_added",
+    "item": { "id": "…", "quantity": 2, "finalPrice": 2650, "modifiers": { "add": ["Bacon"] },
+              "kitchenStatus": "queued", "kitchenTicketId": null,
+              "menuItem": { "id": "…", "name": "X-Burger", "price": 2200, "category": "burgers" } }
+  }
+}
+
+// kitchen.ticket.created — ticket completo, itens com menuItem
+{
+  "orderId": "…", "ticketNumber": 7,
+  "ticket": { "id": "…", "orderId": "…", "number": 7, "createdAt": "2026-07-19T12:00:00.000Z",
+              "items": [ { "id": "…", "kitchenStatus": "queued", "menuItem": { "…": "…" } } ] }
+}
+```
+
+> `send-to-kitchen` emite **os dois**: `kitchen.ticket.created` (room da comanda) e um `order.updated` com `change.kind = "items_queued"`, para quem acompanha a comanda saber que os itens passaram a `queued`.
+
+> Serialização: o payload trafega em JSON, então todo campo `DateTime` do Prisma (`createdAt`, `kitchenStatusChangedAt`, …) chega no cliente como **string ISO 8601**.
 
 **Eventos cliente → servidor:**
 

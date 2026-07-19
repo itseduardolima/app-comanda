@@ -310,52 +310,69 @@ export const useOrdersStore = create<OrdersState>((set, get) => ({
     set((state) => ({ orders: { ...state.orders, [orderId]: updated } }));
   },
 
-  applyOrderUpdated({ orderId, paymentStatus, tableId, closedAt }) {
+  applyOrderUpdated({ orderId, paymentStatus, tableId, closedAt, change }) {
     const id = get().resolveId(orderId);
     const order = get().orders[id];
     if (!order) {
-      // Order unknown on this device: there is no baseline to patch.
+      // The ONLY remaining refetch: the order is unknown on this device, so
+      // there is no baseline to apply the delta onto. Every known order is
+      // patched purely from the payload below.
       void get().refreshOrder(id);
       return;
     }
 
-    // The same event fires for "order closed" and for "item added/edited/removed"
-    // (see .specs/03-api-contrato.md). Payment fields are the only reliable
-    // discriminator the contract offers: a payment/close transition is fully
-    // described by the payload, so it becomes a pure delta.
-    const closed = closedAt != null && closedAt !== order.closedAt;
-    const paid = paymentStatus !== undefined && paymentStatus !== order.paymentStatus;
-    const paymentTransition = closed || paid;
+    // `change` is the explicit discriminator: the payload fully describes what
+    // happened, so no REST read is needed (HU-32).
+    let items = order.items;
+    switch (change.kind) {
+      case 'item_added': {
+        // The device that created the item already has it locally (or under a
+        // local id that sync already swapped) — replace instead of duplicating.
+        const exists = items.some((item) => item.id === change.item.id);
+        items = exists
+          ? items.map((item) => (item.id === change.item.id ? change.item : item))
+          : [...items, change.item];
+        break;
+      }
+      case 'item_updated':
+        items = items.map((item) => (item.id === change.item.id ? change.item : item));
+        break;
+      case 'item_removed':
+        items = items.filter((item) => item.id !== change.itemId);
+        break;
+      case 'items_queued': {
+        const queued = new Map(change.items.map((item) => [item.id, item]));
+        items = items.map((item) => queued.get(item.id) ?? item);
+        break;
+      }
+      case 'order_closed':
+      case 'order_created':
+        // order_closed carries its state in the payment fields applied below;
+        // order_created has nothing to apply to an order already known here.
+        break;
+    }
 
     const updated: Order = {
       ...order,
+      items,
       paymentStatus: paymentStatus ?? order.paymentStatus,
       closedAt: closedAt !== undefined ? closedAt : order.closedAt,
       tableId: tableId !== undefined ? tableId : order.tableId,
     };
     persist(updated);
     set((state) => ({ orders: { ...state.orders, [id]: updated } }));
-
-    if (!paymentTransition) {
-      // Item add/edit/remove: the contract does not ship the items in the
-      // payload, so another device cannot learn them without a REST read.
-      // Unavoidable until the server event carries the items.
-      void get().refreshOrder(id);
-    }
   },
 
-  applyTicketCreated({ orderId, ticketNumber }) {
+  applyTicketCreated({ orderId, ticketNumber, ticket }) {
     const id = get().resolveId(orderId);
     const known = get().tickets[id] ?? [];
-    if (known.some((ticket) => ticket.number === ticketNumber)) {
+    if (known.some((existing) => existing.number === ticketNumber)) {
       return;
     }
-    // KitchenTicket needs id, createdAt and its items; the event only carries
-    // the number, so a full ticket cannot be built from the delta. Refetch is
-    // the only way to render it (contract limitation, not a client shortcut).
-    void get().loadTickets(id);
-    // Items just moved to a ticket (kitchenTicketId / queued) — not in the payload.
-    void get().refreshOrder(id);
+    // The event carries the whole ticket (items included) — pure delta, no
+    // REST read. The matching item changes arrive as an `items_queued`
+    // order.updated event.
+    set((state) => ({ tickets: { ...state.tickets, [id]: [...known, ticket] } }));
   },
 
   clearSyncError() {

@@ -12,7 +12,7 @@ Como **garçom (operador)**, quero **que o app se conecte automaticamente ao can
 - [x] App conecta ao WebSocket do backend usando `socket.io-client`, enviando o JWT da sessão no handshake.
 - [x] Ao abrir a tela de uma comanda ou mesa, o app emite `subscribe` com `{ orderId }` e/ou `{ tableId }` correspondente.
 - [x] Ao sair da tela (unmount), o app emite `unsubscribe` para a mesma room, evitando updates desnecessários.
-- [ ] Eventos recebidos (`item.status.changed`, `order.updated`, `kitchen.ticket.created`) atualizam diretamente as stores Zustand relevantes, sem nova chamada REST.
+- [x] Eventos recebidos (`item.status.changed`, `order.updated`, `kitchen.ticket.created`) atualizam diretamente as stores Zustand relevantes, sem nova chamada REST.
 - [ ] A UI reflete a mudança de status em até 1s após o evento chegar (verificável manualmente/e2e).
 - [x] Conexão é reaproveitada entre telas (um único socket por sessão do app, não uma conexão por tela).
 

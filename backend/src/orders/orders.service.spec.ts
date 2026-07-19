@@ -147,6 +147,7 @@ describe('OrdersService', () => {
         paymentStatus: 'unpaid',
         tableId: 'table-1',
         tableStatus: 'free',
+        change: { kind: 'order_created' },
       });
       expect(result).toBe(full);
     });
@@ -177,10 +178,13 @@ describe('OrdersService', () => {
         },
         include: { menuItem: true },
       });
+      // The event must carry the created item itself, so the client applies
+      // the delta with no REST round-trip (HU-32).
       expect(kitchenGateway.emitOrderUpdated).toHaveBeenCalledWith({
         orderId: 'order-1',
         paymentStatus: 'unpaid',
         tableId: 'table-1',
+        change: { kind: 'item_added', item: createdItem },
       });
       expect(result).toBe(createdItem);
     });
@@ -232,6 +236,28 @@ describe('OrdersService', () => {
       expect(prisma.orderItem.update).not.toHaveBeenCalled();
       expect(kitchenGateway.emitOrderUpdated).not.toHaveBeenCalled();
     });
+
+    it('emits order.updated carrying the updated item', async () => {
+      prisma.order.findUnique.mockResolvedValue(unpaidOrder());
+      prisma.orderItem.findFirst.mockResolvedValue({
+        id: 'item-1',
+        orderId: 'order-1',
+        kitchenTicketId: null,
+        menuItem: menuItem(),
+      });
+      const updatedItem = { id: 'item-1', quantity: 3, menuItem: menuItem() };
+      prisma.orderItem.update.mockResolvedValue(updatedItem);
+
+      const result = await service.updateItem('order-1', 'item-1', { quantity: 3 });
+
+      expect(result).toBe(updatedItem);
+      expect(kitchenGateway.emitOrderUpdated).toHaveBeenCalledWith({
+        orderId: 'order-1',
+        paymentStatus: 'unpaid',
+        tableId: 'table-1',
+        change: { kind: 'item_updated', item: updatedItem },
+      });
+    });
   });
 
   describe('removeItem', () => {
@@ -250,6 +276,26 @@ describe('OrdersService', () => {
 
       expect(prisma.orderItem.delete).not.toHaveBeenCalled();
       expect(kitchenGateway.emitOrderUpdated).not.toHaveBeenCalled();
+    });
+
+    it('emits order.updated carrying the removed itemId', async () => {
+      prisma.order.findUnique.mockResolvedValue(unpaidOrder());
+      prisma.orderItem.findFirst.mockResolvedValue({
+        id: 'item-1',
+        orderId: 'order-1',
+        kitchenTicketId: null,
+        menuItem: menuItem(),
+      });
+
+      await service.removeItem('order-1', 'item-1');
+
+      expect(prisma.orderItem.delete).toHaveBeenCalledWith({ where: { id: 'item-1' } });
+      expect(kitchenGateway.emitOrderUpdated).toHaveBeenCalledWith({
+        orderId: 'order-1',
+        paymentStatus: 'unpaid',
+        tableId: 'table-1',
+        change: { kind: 'item_removed', itemId: 'item-1' },
+      });
     });
   });
 
@@ -324,6 +370,7 @@ describe('OrdersService', () => {
         tableId: 'table-1',
         tableStatus: 'free',
         closedAt: closedAt.toISOString(),
+        change: { kind: 'order_closed' },
       });
       expect(result).toBe(closed);
     });
@@ -346,7 +393,11 @@ describe('OrdersService', () => {
 
       expect(tablesService.refreshStatus).not.toHaveBeenCalled();
       expect(kitchenGateway.emitOrderUpdated).toHaveBeenCalledWith(
-        expect.objectContaining({ tableId: null, tableStatus: undefined }),
+        expect.objectContaining({
+          tableId: null,
+          tableStatus: undefined,
+          change: { kind: 'order_closed' },
+        }),
       );
     });
   });

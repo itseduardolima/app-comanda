@@ -7,7 +7,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { KitchenStatus, PaymentStatus, TableStatus } from '@prisma/client';
+import { KitchenStatus, PaymentStatus, Prisma, TableStatus } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { WsJwtGuard } from '../auth/guards/ws-jwt.guard';
 import { AuthenticatedOperator } from '../common/types/authenticated-operator';
@@ -28,17 +28,45 @@ export interface ItemStatusChangedEvent {
   changedAt: string;
 }
 
+/**
+ * Payload types are derived from Prisma directly (not imported from
+ * orders.service / kitchen.service) to keep the gateway free of a circular
+ * import: those services import this gateway.
+ */
+export type OrderItemWithMenuItem = Prisma.OrderItemGetPayload<{
+  include: { menuItem: true };
+}>;
+
+export type TicketWithMenuItems = Prisma.KitchenTicketGetPayload<{
+  include: { items: { include: { menuItem: true } } };
+}>;
+
+/**
+ * Discriminated delta carried by every `order.updated`. It is what makes the
+ * event self-sufficient: the client applies it without any REST round-trip
+ * (HU-32).
+ */
+export type OrderChange =
+  | { kind: 'item_added'; item: OrderItemWithMenuItem }
+  | { kind: 'item_updated'; item: OrderItemWithMenuItem }
+  | { kind: 'item_removed'; itemId: string }
+  | { kind: 'items_queued'; items: OrderItemWithMenuItem[] }
+  | { kind: 'order_created' }
+  | { kind: 'order_closed' };
+
 export interface OrderUpdatedEvent {
   orderId: string;
   paymentStatus: PaymentStatus;
   tableId?: string | null;
   tableStatus?: TableStatus;
   closedAt?: string | null;
+  change: OrderChange;
 }
 
 export interface TicketCreatedEvent {
   orderId: string;
   ticketNumber: number;
+  ticket: TicketWithMenuItems;
 }
 
 const orderRoom = (orderId: string): string => `order:${orderId}`;

@@ -71,7 +71,16 @@ export class KitchenService {
       });
     });
 
-    this.gateway.emitTicketCreated({ orderId, ticketNumber: ticket.number });
+    // Both events carry the full data the client needs to apply the delta
+    // without a REST round-trip (HU-32): the ticket with its items for the
+    // kitchen view, and the queued items for whoever watches the order.
+    this.gateway.emitTicketCreated({ orderId, ticketNumber: ticket.number, ticket });
+    this.gateway.emitOrderUpdated({
+      orderId,
+      paymentStatus: order.paymentStatus,
+      tableId: order.tableId,
+      change: { kind: 'items_queued', items: ticket.items },
+    });
     return ticket;
   }
 

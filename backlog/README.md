@@ -69,7 +69,7 @@
 | [HU-29](sprint-4-cozinha-tempo-real/HU-29-backend-send-to-kitchen.md) | Backend: enviar comanda para cozinha (gera ticket) | Backend | 3 | Completa |
 | [HU-30](sprint-4-cozinha-tempo-real/HU-30-backend-atualizar-status-item.md) | Backend: atualizar status por item | Backend | 2 | Completa |
 | [HU-31](sprint-4-cozinha-tempo-real/HU-31-backend-kitchen-gateway-websocket.md) | Backend: KitchenGateway (WebSocket) | Backend | 5 | Parcial 11/12 |
-| [HU-32](sprint-4-cozinha-tempo-real/HU-32-app-cliente-websocket.md) | App: cliente WebSocket (subscribe/deltas) | Frontend | 5 | Parcial 8/11 |
+| [HU-32](sprint-4-cozinha-tempo-real/HU-32-app-cliente-websocket.md) | App: cliente WebSocket (subscribe/deltas) | Frontend | 5 | Parcial 9/11 |
 | [HU-33](sprint-4-cozinha-tempo-real/HU-33-app-reconexao-ressincronizacao.md) | App: reconexão e ressincronização via REST | Frontend | 3 | Parcial 9/11 |
 | [HU-34](sprint-4-cozinha-tempo-real/HU-34-app-tela-enviado-cozinha.md) | App: tela Enviado à cozinha (ticket + stepper) | Frontend | 3 | Completa |
 | [HU-35](sprint-4-cozinha-tempo-real/HU-35-app-tela-em-preparo.md) | App: tela Em preparo | Frontend | 2 | Parcial 9/10 |

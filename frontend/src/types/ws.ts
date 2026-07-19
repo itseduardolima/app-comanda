@@ -1,4 +1,4 @@
-import { KitchenStatus, PaymentStatus } from './order';
+import { KitchenStatus, KitchenTicket, OrderItem, PaymentStatus } from './order';
 import { TableStatus } from './table';
 
 /**
@@ -14,15 +14,32 @@ export interface ItemStatusChangedEvent {
   changedAt?: string;
 }
 
+/**
+ * What actually changed in the order. This is the discriminator the client
+ * switches on — with it every `order.updated` event is a pure delta and needs
+ * no REST read.
+ */
+export type OrderChange =
+  | { kind: 'item_added'; item: OrderItem }
+  | { kind: 'item_updated'; item: OrderItem }
+  | { kind: 'item_removed'; itemId: string }
+  /** send-to-kitchen: the affected items come back queued and ticketed. */
+  | { kind: 'items_queued'; items: OrderItem[] }
+  | { kind: 'order_created' }
+  | { kind: 'order_closed' };
+
 export interface OrderUpdatedEvent {
   orderId: string;
   paymentStatus: PaymentStatus;
   tableId?: string | null;
   tableStatus?: TableStatus;
   closedAt?: string | null;
+  change: OrderChange;
 }
 
 export interface TicketCreatedEvent {
   orderId: string;
   ticketNumber: number;
+  /** Full ticket (items included) so the client never refetches it. */
+  ticket: KitchenTicket;
 }

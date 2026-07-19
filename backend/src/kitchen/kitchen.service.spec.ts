@@ -56,6 +56,7 @@ describe('KitchenService', () => {
   const gatewayMock = {
     emitTicketCreated: jest.fn(),
     emitItemStatusChanged: jest.fn(),
+    emitOrderUpdated: jest.fn(),
   };
 
   beforeEach(() => {
@@ -131,12 +132,14 @@ describe('KitchenService', () => {
       await expect(service.sendToKitchen('order-1')).rejects.toBeInstanceOf(BadRequestException);
       expect(txMock.kitchenTicket.findUniqueOrThrow).not.toHaveBeenCalled();
       expect(gatewayMock.emitTicketCreated).not.toHaveBeenCalled();
+      expect(gatewayMock.emitOrderUpdated).not.toHaveBeenCalled();
     });
 
-    it('creates a ticket, queues only pending items and emits kitchen.ticket.created', async () => {
+    it('creates a ticket, queues only pending items and emits kitchen.ticket.created plus order.updated', async () => {
       prismaMock.order.findUnique.mockResolvedValue({
         id: 'order-1',
         paymentStatus: 'unpaid',
+        tableId: 'table-1',
         items: [
           orderItem({ id: 'item-pending-1' }),
           orderItem({ id: 'item-sent', kitchenTicketId: 'ticket-old' }),
@@ -179,10 +182,21 @@ describe('KitchenService', () => {
         where: { id: 'ticket-1' },
         include: { items: { include: { menuItem: true } } },
       });
+      // The full ticket rides on the event: no extra query here, and no REST
+      // round-trip on the client to apply the delta (HU-32).
       expect(gatewayMock.emitTicketCreated).toHaveBeenCalledTimes(1);
       expect(gatewayMock.emitTicketCreated).toHaveBeenCalledWith({
         orderId: 'order-1',
         ticketNumber: 7,
+        ticket: ticketWithItems,
+      });
+      // Order subscribers learn the items flipped to queued.
+      expect(gatewayMock.emitOrderUpdated).toHaveBeenCalledTimes(1);
+      expect(gatewayMock.emitOrderUpdated).toHaveBeenCalledWith({
+        orderId: 'order-1',
+        paymentStatus: 'unpaid',
+        tableId: 'table-1',
+        change: { kind: 'items_queued', items: ticketWithItems.items },
       });
     });
   });

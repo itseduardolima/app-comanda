@@ -48,6 +48,19 @@ interface ItemStatusChangedEvent {
   changedAt: string;
 }
 
+interface TicketCreatedEvent {
+  orderId: string;
+  ticketNumber: number;
+  ticket: TicketResponse;
+}
+
+interface OrderUpdatedEvent {
+  orderId: string;
+  paymentStatus: string;
+  tableId?: string | null;
+  change: { kind: string; items?: KitchenItemResponse[] };
+}
+
 function waitForEvent<T = unknown>(
   socket: ClientSocket,
   event: string,
@@ -329,6 +342,43 @@ describe('Kitchen (e2e)', () => {
       expect(event.itemId).toBe(itemBId);
       expect(event.kitchenStatus).toBe('preparing');
       expect(event.changedAt).toEqual(expect.any(String));
+      socket.disconnect();
+    });
+
+    it('emits kitchen.ticket.created with the full ticket and order.updated with items_queued', async () => {
+      const socket = connectSocket(token);
+      await waitForEvent(socket, 'connect');
+      await new Promise<void>((resolve) => {
+        socket.emit('subscribe', { orderId }, () => resolve());
+      });
+
+      const newItemId = await addItem(juice.id, 3);
+      const ticketPromise = waitForEvent<TicketCreatedEvent>(socket, 'kitchen.ticket.created');
+      const orderUpdatedPromise = waitForEvent<OrderUpdatedEvent>(socket, 'order.updated');
+
+      const res = await request(server)
+        .post(`/api/orders/${orderId}/send-to-kitchen`)
+        .set(...authHeader())
+        .expect(201);
+      const created = res.body as TicketResponse;
+
+      const ticketEvent = await ticketPromise;
+      expect(ticketEvent.orderId).toBe(orderId);
+      expect(ticketEvent.ticketNumber).toBe(created.number);
+      // The whole ticket rides on the event, items included, so the client
+      // never needs a REST call to apply the delta (HU-32).
+      expect(ticketEvent.ticket.id).toBe(created.id);
+      expect(ticketEvent.ticket.number).toBe(created.number);
+      expect(ticketEvent.ticket.items).toHaveLength(1);
+      expect(ticketEvent.ticket.items[0].id).toBe(newItemId);
+      expect(ticketEvent.ticket.items[0].kitchenStatus).toBe('queued');
+      expect(ticketEvent.ticket.items[0].menuItem.name).toBe(JUICE_NAME);
+
+      const orderEvent = await orderUpdatedPromise;
+      expect(orderEvent.orderId).toBe(orderId);
+      expect(orderEvent.paymentStatus).toBe('unpaid');
+      expect(orderEvent.change.kind).toBe('items_queued');
+      expect(orderEvent.change.items?.map((item) => item.id)).toEqual([newItemId]);
       socket.disconnect();
     });
   });
