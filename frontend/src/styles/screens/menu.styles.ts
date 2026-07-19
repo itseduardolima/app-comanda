@@ -11,7 +11,12 @@ export const useStyles = createStyles((theme) => ({
     gap: theme.spacing.md,
   },
   categoryScroll: {
+    // flexShrink: 0 is the load-bearing half. Without it the row is a flex
+    // child with the default shrink of 1, so once the list below overflows
+    // the column the chips get squeezed to nothing and the items render on
+    // top of them. flexGrow: 0 alone only stops it from expanding.
     flexGrow: 0,
+    flexShrink: 0,
   },
   categoryRow: {
     flexDirection: 'row',
