@@ -1,9 +1,10 @@
 import { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable } from 'react-native';
 import { useTheme } from '../../../theme/theme-provider';
-import { Text } from '../text/text';
+import { Text, TextColor } from '../text/text';
+import { useStyles } from './button.styles';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
+export type ButtonVariant = 'primary' | 'dark' | 'secondary' | 'success' | 'danger' | 'ghost';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface Props {
@@ -15,6 +16,15 @@ interface Props {
   children: ReactNode;
   accessibilityLabel?: string;
 }
+
+const TEXT_COLOR: Record<ButtonVariant, TextColor> = {
+  primary: 'onPrimary',
+  dark: 'onDark',
+  success: 'onPrimary',
+  danger: 'onPrimary',
+  secondary: 'secondary',
+  ghost: 'primary',
+};
 
 /**
  * The only button in the app — visual variations are variants, never new
@@ -29,32 +39,11 @@ export function Button({
   children,
   accessibilityLabel,
 }: Props) {
+  const styles = useStyles();
   const theme = useTheme();
-
-  const heights: Record<ButtonSize, number> = { sm: 36, md: 48, lg: 56 };
-  const paddings: Record<ButtonSize, number> = {
-    sm: theme.spacing.sm,
-    md: theme.spacing.md,
-    lg: theme.spacing.lg,
-  };
-
-  const container: Record<ButtonVariant, ViewStyle> = {
-    primary: { backgroundColor: theme.colors.primary },
-    secondary: {
-      backgroundColor: theme.colors.surface,
-      borderWidth: 1,
-      borderColor: theme.colors.primary,
-    },
-    danger: { backgroundColor: theme.colors.danger },
-    ghost: { backgroundColor: 'transparent' },
-  };
-
-  const textColor: Record<ButtonVariant, 'onPrimary' | 'primary' | 'danger'> = {
-    primary: 'onPrimary',
-    secondary: 'primary',
-    danger: 'onPrimary',
-    ghost: 'primary',
-  };
+  const sizeStyle = { sm: styles.sizeSm, md: styles.sizeMd, lg: styles.sizeLg }[size];
+  const spinnerColor =
+    variant === 'secondary' || variant === 'ghost' ? theme.colors.primary : theme.colors.onPrimary;
 
   return (
     <Pressable
@@ -63,25 +52,16 @@ export function Button({
       onPress={onPress}
       disabled={disabled || loading}
       style={({ pressed }) => [
-        {
-          height: heights[size],
-          paddingHorizontal: paddings[size],
-          borderRadius: theme.radii.md,
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'row',
-          gap: theme.spacing.sm,
-          opacity: disabled || loading ? 0.6 : pressed ? 0.85 : 1,
-        },
-        container[variant],
+        styles.base,
+        sizeStyle,
+        pressed ? styles[`${variant}Pressed`] : styles[variant],
+        (disabled || loading) && styles.dimmed,
       ]}
     >
       {loading ? (
-        <ActivityIndicator
-          color={variant === 'secondary' || variant === 'ghost' ? theme.colors.primary : theme.colors.onPrimary}
-        />
+        <ActivityIndicator color={spinnerColor} />
       ) : (
-        <Text variant="body" color={textColor[variant]}>
+        <Text variant={size === 'sm' ? 'body' : 'subtitle'} weight="semibold" color={TEXT_COLOR[variant]}>
           {children}
         </Text>
       )}

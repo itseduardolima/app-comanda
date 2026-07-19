@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { TextInput, TextInputProps, View } from 'react-native';
 import { useTheme } from '../../../theme/theme-provider';
 import { Text } from '../text/text';
+import { useStyles } from './input.styles';
 
 interface Props extends Pick<
     TextInputProps,
@@ -23,27 +25,28 @@ interface Props extends Pick<
 }
 
 export function Input({ label, error, multiline, ...inputProps }: Props) {
+  const styles = useStyles();
   const theme = useTheme();
+  const [focused, setFocused] = useState(false);
+
   return (
-    <View style={{ gap: theme.spacing.xs }}>
-      {label ? <Text variant="caption">{label}</Text> : null}
+    <View style={styles.container}>
+      {label ? (
+        <Text variant="label" color="muted">
+          {label}
+        </Text>
+      ) : null}
       <TextInput
         {...inputProps}
         multiline={multiline}
-        placeholderTextColor={theme.colors.textMuted}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholderTextColor={theme.colors.textFaint}
         style={[
-          theme.typography.body,
-          {
-            backgroundColor: theme.colors.surface,
-            borderWidth: 1,
-            borderColor: error ? theme.colors.danger : theme.colors.border,
-            borderRadius: theme.radii.md,
-            paddingHorizontal: theme.spacing.md,
-            paddingVertical: multiline ? theme.spacing.sm : 0,
-            height: multiline ? 96 : 48,
-            textAlignVertical: multiline ? 'top' : 'center',
-            color: theme.colors.text,
-          },
+          styles.field,
+          multiline && styles.fieldMultiline,
+          focused && styles.fieldFocused,
+          error != null && styles.fieldError,
         ]}
       />
       {error ? (

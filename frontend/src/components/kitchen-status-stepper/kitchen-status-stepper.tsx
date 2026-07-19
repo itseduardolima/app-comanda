@@ -1,8 +1,7 @@
-import { View } from 'react-native';
+import { Text as RNText, View } from 'react-native';
 import { t } from '../../i18n';
-import { useTheme } from '../../theme/theme-provider';
 import { KITCHEN_STATUS_SEQUENCE, KitchenStatus } from '../../types/order';
-import { Text } from '../ui/text/text';
+import { useStyles } from './kitchen-status-stepper.styles';
 
 const STEP_LABEL_KEYS = [
   'kitchen.stepSent',
@@ -11,40 +10,49 @@ const STEP_LABEL_KEYS = [
   'kitchen.stepDelivered',
 ] as const;
 
-/** 4-step progress (Enviado → Preparo → Pronto → Entregue) — screens 4A–4D. */
+/**
+ * Kitchen progress (screens 4A–4D, prototype design): four stage labels over
+ * a progress bar whose fill width/color tracks the current stage — past
+ * stages read green, the current one takes its stage color, future ones fade.
+ */
 export function KitchenStatusStepper({ status }: { status: KitchenStatus }) {
-  const theme = useTheme();
+  const styles = useStyles();
   const currentIndex = KITCHEN_STATUS_SEQUENCE.indexOf(status);
+  const currentLabelStyle = {
+    queued: styles.labelQueued,
+    preparing: styles.labelPreparing,
+    ready: styles.labelReady,
+    delivered: styles.labelDelivered,
+  }[status];
+  const fillStyle = {
+    queued: styles.fillQueued,
+    preparing: styles.fillPreparing,
+    ready: styles.fillReady,
+    delivered: styles.fillDelivered,
+  }[status];
 
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-      {STEP_LABEL_KEYS.map((labelKey, index) => {
-        const reached = index <= currentIndex;
-        const isLast = index === STEP_LABEL_KEYS.length - 1;
-        return (
-          <View key={labelKey} style={{ flex: 1, alignItems: 'center' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-              <View style={{ flex: 1, height: 2, backgroundColor: index === 0 ? 'transparent' : reached ? theme.colors.primary : theme.colors.border }} />
-              <View
-                style={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: theme.radii.pill,
-                  backgroundColor: reached ? theme.colors.primary : theme.colors.surface,
-                  borderWidth: 2,
-                  borderColor: reached ? theme.colors.primary : theme.colors.border,
-                }}
-              />
-              <View style={{ flex: 1, height: 2, backgroundColor: isLast ? 'transparent' : index < currentIndex ? theme.colors.primary : theme.colors.border }} />
-            </View>
-            <View style={{ marginTop: theme.spacing.xs }}>
-              <Text variant="caption" color={reached ? 'primary' : 'muted'}>
-                {t(labelKey)}
-              </Text>
-            </View>
-          </View>
-        );
-      })}
+    <View>
+      <View style={styles.labels}>
+        {STEP_LABEL_KEYS.map((labelKey, index) => (
+          <RNText
+            key={labelKey}
+            style={[
+              styles.labelText,
+              index < currentIndex
+                ? styles.labelPast
+                : index === currentIndex
+                  ? currentLabelStyle
+                  : styles.labelFuture,
+            ]}
+          >
+            {t(labelKey)}
+          </RNText>
+        ))}
+      </View>
+      <View style={styles.track}>
+        <View style={[styles.fill, fillStyle]} />
+      </View>
     </View>
   );
 }

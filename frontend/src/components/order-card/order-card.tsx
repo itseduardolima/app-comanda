@@ -1,10 +1,10 @@
-import { View } from 'react-native';
-import { t, tCount } from '../../i18n';
-import { useTheme } from '../../theme/theme-provider';
-import { KITCHEN_STATUS_SEQUENCE, KitchenStatus, Order } from '../../types/order';
-import { Badge, BadgeVariant } from '../ui/badge/badge';
+import { Text as RNText, View } from 'react-native';
+import { formatCents, t, tCount, TranslationKey } from '../../i18n';
+import { KITCHEN_STATUS_SEQUENCE, KitchenStatus, Order, orderTotal } from '../../types/order';
+import { Badge } from '../ui/badge/badge';
 import { Card } from '../ui/card/card';
 import { Text } from '../ui/text/text';
+import { useStyles } from './order-card.styles';
 
 interface Props {
   order: Order;
@@ -12,13 +12,21 @@ interface Props {
   onPress: () => void;
 }
 
+/** Bottom-row status label per prototype ("Pedido pronto", "Em preparo"…). */
+const CARD_STATUS_KEYS: Record<KitchenStatus, TranslationKey> = {
+  queued: 'kitchen.statusQueued',
+  preparing: 'kitchen.statusPreparing',
+  ready: 'orders.cardReady',
+  delivered: 'kitchen.statusDelivered',
+};
+
 function orderTitle(order: Order): string {
   if (order.type === 'dine_in') {
-    const table = order.table ? `${t('orders.table')} ${String(order.table.number).padStart(2, '0')}` : t('orders.table');
-    return order.customerName ? `${table} · ${order.customerName}` : table;
+    return order.table
+      ? `${t('orders.table')} ${String(order.table.number).padStart(2, '0')}`
+      : t('orders.table');
   }
-  const typeLabel = order.type === 'counter' ? t('orders.counter') : t('orders.delivery');
-  return order.customerName ? `${typeLabel} · ${order.customerName}` : typeLabel;
+  return order.type === 'counter' ? t('orders.counter') : t('orders.delivery');
 }
 
 /** Least-advanced kitchen status across items — the order's bottleneck. */
@@ -33,34 +41,56 @@ function kitchenBottleneck(order: Order): KitchenStatus | null {
   return KITCHEN_STATUS_SEQUENCE[minIndex];
 }
 
-/** Card of screen 01 — Comandas list (HU-04). */
+/** Card of screen 01 — Comandas list (HU-04, prototype layout). */
 export function OrderCard({ order, now, onPress }: Props) {
-  const theme = useTheme();
+  const styles = useStyles();
   const minutes = Math.max(
     0,
     Math.floor((now.getTime() - new Date(order.createdAt).getTime()) / 60_000),
   );
   const elapsed = minutes === 0 ? t('orders.justNow') : t('orders.elapsedMinutes', { count: minutes });
+  const subtitleParts = [
+    order.customerName || null,
+    tCount('orders.itemsCount', order.items.length),
+    elapsed,
+  ].filter(Boolean);
   const bottleneck = kitchenBottleneck(order);
+  const bottleneckDone = bottleneck === 'ready' || bottleneck === 'delivered';
 
   return (
     <Card onPress={onPress}>
-      <View style={{ gap: theme.spacing.sm }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text variant="subtitle">{orderTitle(order)}</Text>
-          <Badge variant={order.paymentStatus === 'paid' ? 'paid' : 'unpaid'} />
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm }}>
-          <Text variant="caption" color="muted">
-            {tCount('orders.itemsCount', order.items.length)} · {elapsed}
+      <View style={styles.header}>
+        <View style={styles.headerInfo}>
+          <Text variant="subtitle" weight="bold">
+            {orderTitle(order)}
           </Text>
-          {order.pendingSync ? (
-            <Text variant="caption" color="muted">
-              ⟳ {t('common.pendingSync')}
-            </Text>
-          ) : null}
+          <Text variant="caption" color="muted">
+            {subtitleParts.join(' · ')}
+          </Text>
         </View>
-        {bottleneck ? <Badge variant={bottleneck as BadgeVariant} /> : null}
+        <Badge variant={order.paymentStatus === 'paid' ? 'paid' : 'unpaid'} />
+      </View>
+      {order.pendingSync ? (
+        <View style={styles.pendingRow}>
+          <Text variant="caption" color="muted">
+            ⟳ {t('common.pendingSync')}
+          </Text>
+        </View>
+      ) : null}
+      <View style={styles.footer}>
+        {bottleneck ? (
+          <View style={styles.statusRow}>
+            <View style={[styles.statusDot, bottleneckDone ? styles.dotSuccess : styles.dotPrimary]} />
+            <RNText style={[styles.statusText, bottleneckDone && styles.statusTextSuccess]}>
+              {t(CARD_STATUS_KEYS[bottleneck])}
+            </RNText>
+          </View>
+        ) : (
+          <View />
+        )}
+        <Text variant="subtitle" weight="bold">
+          {formatCents(orderTotal(order))}
+        </Text>
       </View>
     </Card>
   );

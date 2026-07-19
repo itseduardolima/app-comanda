@@ -40,15 +40,18 @@ function renderWithTheme(ui: ReactElement) {
 }
 
 describe('OrderCard', () => {
-  it('shows "Mesa NN · name" for a dine_in order with table and customer', async () => {
+  it('shows the zero-padded table as title and the customer in the subtitle', async () => {
     await renderWithTheme(<OrderCard order={makeOrder()} now={NOW} onPress={jest.fn()} />);
-    expect(screen.getByText('Mesa 07 · Ana')).toBeOnTheScreen();
+    expect(screen.getByText('Mesa 07')).toBeOnTheScreen();
+    expect(screen.getByText(/^Ana · 1 item · /)).toBeOnTheScreen();
   });
 
-  it('shows only the zero-padded table when there is no customer name', async () => {
+  it('omits the customer from the subtitle when there is no customer name', async () => {
     const order = makeOrder({ customerName: null, table: { id: 't-12', number: 12, status: 'occupied' } });
     await renderWithTheme(<OrderCard order={order} now={NOW} onPress={jest.fn()} />);
     expect(screen.getByText('Mesa 12')).toBeOnTheScreen();
+    expect(screen.queryByText(/Ana/)).toBeNull();
+    expect(screen.getByText(/^1 item · /)).toBeOnTheScreen();
   });
 
   it('shows the "Pago" badge for a paid order', async () => {

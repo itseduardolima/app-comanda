@@ -13,8 +13,20 @@ function Harness({ onComplete }: { onComplete?: (pin: string) => void }) {
   );
 }
 
-function typeOnHiddenInput(text: string) {
-  return fireEvent.changeText(screen.getByTestId('pin-hidden-input'), text);
+/** Presses the on-screen keypad key labelled with the given digit. */
+function pressKey(digit: string) {
+  return fireEvent.press(screen.getByLabelText(digit));
+}
+
+function pressBackspace() {
+  return fireEvent.press(screen.getByLabelText('backspace'));
+}
+
+function dotCounts() {
+  return {
+    filled: screen.queryAllByTestId('pin-dot-filled').length,
+    empty: screen.queryAllByTestId('pin-dot-empty').length,
+  };
 }
 
 describe('PinInput', () => {
@@ -22,69 +34,87 @@ describe('PinInput', () => {
     const onComplete = jest.fn();
     await render(<Harness onComplete={onComplete} />);
 
-    await typeOnHiddenInput('4');
-    await typeOnHiddenInput('49');
-    await typeOnHiddenInput('490');
+    await pressKey('4');
+    await pressKey('9');
+    await pressKey('0');
     expect(onComplete).not.toHaveBeenCalled();
 
-    await typeOnHiddenInput('4902');
+    await pressKey('2');
     expect(onComplete).toHaveBeenCalledTimes(1);
     expect(onComplete).toHaveBeenCalledWith('4902');
   });
 
-  it('strips non-digit characters before reporting the value', async () => {
+  it('ignores a 5th key press and does not fire onComplete again', async () => {
+    const onComplete = jest.fn();
+    await render(<Harness onComplete={onComplete} />);
+
+    for (const digit of ['1', '2', '3', '4']) {
+      await pressKey(digit);
+    }
+    expect(onComplete).toHaveBeenCalledTimes(1);
+
+    await pressKey('5');
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledWith('1234');
+    expect(dotCounts()).toEqual({ filled: 4, empty: 0 });
+  });
+
+  it('does not report a change once the pin is full', async () => {
+    const onChange = jest.fn();
+    await render(
+      <ThemeProvider>
+        <PinInput value="1234" onChange={onChange} />
+      </ThemeProvider>,
+    );
+    await pressKey('5');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('removes the last digit on backspace', async () => {
+    const onChange = jest.fn();
+    await render(
+      <ThemeProvider>
+        <PinInput value="123" onChange={onChange} />
+      </ThemeProvider>,
+    );
+    await pressBackspace();
+    expect(onChange).toHaveBeenCalledWith('12');
+  });
+
+  it('ignores backspace when the pin is empty', async () => {
     const onChange = jest.fn();
     await render(
       <ThemeProvider>
         <PinInput value="" onChange={onChange} />
       </ThemeProvider>,
     );
-
-    await typeOnHiddenInput('a1!b2·');
-    expect(onChange).toHaveBeenCalledWith('12');
+    await pressBackspace();
+    expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('completes with only the first 4 digits when extra characters sneak in', async () => {
-    const onChange = jest.fn();
+  it('fills one dot per typed digit and never shows the digits themselves', async () => {
     const onComplete = jest.fn();
-    await render(
-      <ThemeProvider>
-        <PinInput value="" onChange={onChange} onComplete={onComplete} />
-      </ThemeProvider>,
-    );
+    await render(<Harness onComplete={onComplete} />);
+    expect(dotCounts()).toEqual({ filled: 0, empty: 4 });
 
-    await typeOnHiddenInput('1a2b3c4d5');
-    expect(onChange).toHaveBeenCalledWith('1234');
-    expect(onComplete).toHaveBeenCalledTimes(1);
-    expect(onComplete).toHaveBeenCalledWith('1234');
+    await pressKey('1');
+    await pressKey('2');
+    expect(dotCounts()).toEqual({ filled: 2, empty: 2 });
+
+    await pressBackspace();
+    expect(dotCounts()).toEqual({ filled: 1, empty: 3 });
   });
 
-  it('masks the typed value as one dot per digit', async () => {
+  it('renders the left action key and fires it without touching the pin', async () => {
+    const onPress = jest.fn();
+    const onChange = jest.fn();
     await render(
       <ThemeProvider>
-        <PinInput value="12" onChange={jest.fn()} />
+        <PinInput value="1" onChange={onChange} leftAction={{ label: 'Trocar', onPress }} />
       </ThemeProvider>,
     );
-    expect(screen.getAllByText('•')).toHaveLength(2);
-    expect(screen.queryByText('1')).toBeNull();
-    expect(screen.queryByText('2')).toBeNull();
-  });
-
-  it('shows 4 dots (one per box) when the pin is full', async () => {
-    await render(
-      <ThemeProvider>
-        <PinInput value="1234" onChange={jest.fn()} />
-      </ThemeProvider>,
-    );
-    expect(screen.getAllByText('•')).toHaveLength(4);
-  });
-
-  it('renders no dots when empty', async () => {
-    await render(
-      <ThemeProvider>
-        <PinInput value="" onChange={jest.fn()} />
-      </ThemeProvider>,
-    );
-    expect(screen.queryAllByText('•')).toHaveLength(0);
+    await fireEvent.press(screen.getByText('Trocar'));
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(onChange).not.toHaveBeenCalled();
   });
 });

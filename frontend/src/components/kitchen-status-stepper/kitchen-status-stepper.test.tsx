@@ -22,26 +22,34 @@ describe('KitchenStatusStepper', () => {
     }
   });
 
-  it('marks only the first step as reached for "queued"', async () => {
+  it('highlights only the first step and fades the rest for "queued"', async () => {
     await renderStepper('queued');
     expect(screen.getByText('Enviado')).toHaveStyle({ color: defaultTheme.colors.primary });
-    expect(screen.getByText('Preparo')).toHaveStyle({ color: defaultTheme.colors.textMuted });
-    expect(screen.getByText('Pronto')).toHaveStyle({ color: defaultTheme.colors.textMuted });
-    expect(screen.getByText('Entregue')).toHaveStyle({ color: defaultTheme.colors.textMuted });
+    expect(screen.getByText('Preparo')).toHaveStyle({ color: defaultTheme.colors.textFaint });
+    expect(screen.getByText('Pronto')).toHaveStyle({ color: defaultTheme.colors.textFaint });
+    expect(screen.getByText('Entregue')).toHaveStyle({ color: defaultTheme.colors.textFaint });
+  });
+
+  it('paints the current step with its stage color and past steps green for "preparing"', async () => {
+    await renderStepper('preparing');
+    expect(screen.getByText('Enviado')).toHaveStyle({ color: defaultTheme.colors.success });
+    expect(screen.getByText('Preparo')).toHaveStyle({ color: defaultTheme.colors.warning });
+    expect(screen.getByText('Pronto')).toHaveStyle({ color: defaultTheme.colors.textFaint });
+    expect(screen.getByText('Entregue')).toHaveStyle({ color: defaultTheme.colors.textFaint });
   });
 
   it('marks steps up to the current status as reached for "ready"', async () => {
     await renderStepper('ready');
-    expect(screen.getByText('Enviado')).toHaveStyle({ color: defaultTheme.colors.primary });
-    expect(screen.getByText('Preparo')).toHaveStyle({ color: defaultTheme.colors.primary });
-    expect(screen.getByText('Pronto')).toHaveStyle({ color: defaultTheme.colors.primary });
-    expect(screen.getByText('Entregue')).toHaveStyle({ color: defaultTheme.colors.textMuted });
+    expect(screen.getByText('Enviado')).toHaveStyle({ color: defaultTheme.colors.success });
+    expect(screen.getByText('Preparo')).toHaveStyle({ color: defaultTheme.colors.success });
+    expect(screen.getByText('Pronto')).toHaveStyle({ color: defaultTheme.colors.success });
+    expect(screen.getByText('Entregue')).toHaveStyle({ color: defaultTheme.colors.textFaint });
   });
 
   it('marks every step as reached for "delivered"', async () => {
     await renderStepper('delivered');
     for (const label of STEP_LABELS) {
-      expect(screen.getByText(label)).toHaveStyle({ color: defaultTheme.colors.primary });
+      expect(screen.getByText(label)).toHaveStyle({ color: defaultTheme.colors.success });
     }
   });
 });

@@ -1,36 +1,25 @@
 import { ReactNode } from 'react';
-import { Pressable, View, ViewStyle } from 'react-native';
-import { useTheme } from '../../../theme/theme-provider';
+import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
+import { useStyles } from './card.styles';
 
 interface Props {
   children: ReactNode;
   onPress?: () => void;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 /** Surface container used by every list card in the app. */
 export function Card({ children, onPress, style }: Props) {
-  const theme = useTheme();
-  const base: ViewStyle = {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radii.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    padding: theme.spacing.md,
-  };
+  const styles = useStyles();
 
   if (!onPress) {
-    return <View style={[base, style]}>{children}</View>;
+    return <View style={[styles.base, style]}>{children}</View>;
   }
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [
-        base,
-        pressed && { backgroundColor: theme.colors.surfacePressed },
-        style,
-      ]}
+      style={({ pressed }) => [styles.base, pressed && styles.pressed, style]}
     >
       {children}
     </Pressable>

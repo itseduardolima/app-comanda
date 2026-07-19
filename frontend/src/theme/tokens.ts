@@ -1,97 +1,152 @@
 /**
- * Design tokens — the single source of every color, spacing, radius and font
- * size in the app. Components never hardcode visual values; they read tokens
- * via useTheme(). Swapping the brand below rebrands the whole product.
+ * Design tokens — single source of every color, font, spacing and radius.
+ * Values imported from the reference prototype "App Garcom Fogo e Brasa"
+ * (claude.ai/design project "Protótipo PDV Fogo Brasa"). Components never
+ * hardcode visual values; they read tokens via useTheme()/createStyles.
  *
- * MVP supports a single light theme: the app is used in bright dining rooms
- * and kitchens, where dark UIs hurt readability (decision documented per
- * HU-02 — dark mode can be added later as a second `ThemeTokens` object).
+ * MVP ships a single light theme: the app is used in bright dining rooms
+ * (HU-02 decision) — dark mode can land later as a second ThemeTokens object.
  */
+import { TextStyle } from 'react-native';
 
 export interface BrandConfig {
   /** Establishment name shown on Login and headers — configuration, not code. */
   name: string;
   /** Short tagline shown on the Login screen. */
   tagline: string;
+  /** Single letter used as the logo mark (prototype: "F"). */
+  monogram: string;
 }
 
 export interface ThemeTokens {
   brand: BrandConfig;
   colors: {
-    primary: string;
-    primaryPressed: string;
-    onPrimary: string;
+    /** Screen background (warm off-white). */
     background: string;
     surface: string;
     surfacePressed: string;
+    /** Neutral soft fill for icon boxes / modifier chips. */
+    neutralSoft: string;
     text: string;
+    textSecondary: string;
     textMuted: string;
+    textFaint: string;
+    onPrimary: string;
+    onDark: string;
     border: string;
-    danger: string;
-    dangerSoft: string;
+    divider: string;
+    /** Terracotta brand color. */
+    primary: string;
+    primaryPressed: string;
+    primarySoft: string;
+    primarySoftBorder: string;
+    /** Near-black used for active chips and dark buttons. */
+    dark: string;
+    darkPressed: string;
     success: string;
     successSoft: string;
+    successSofter: string;
+    successBorder: string;
+    /** Stronger green border used by selected "add ingredient" chips. */
+    successBorderStrong: string;
     warning: string;
     warningSoft: string;
-    info: string;
-    infoSoft: string;
-    neutralSoft: string;
+    warningBorder: string;
+    /** Darker amber for text over warningSoft (unpaid banner). */
+    warningDeep: string;
+    /** Occupied-table gold dot. */
+    gold: string;
+    danger: string;
+    dangerSoft: string;
+    /** Progress bar track (kitchen stepper). */
+    track: string;
     overlay: string;
-    /** Kitchen status accents (queued → delivered). */
-    statusQueued: string;
-    statusPreparing: string;
-    statusReady: string;
-    statusDelivered: string;
+  };
+  fonts: {
+    regular: string;
+    medium: string;
+    semibold: string;
+    bold: string;
   };
   spacing: { xs: number; sm: number; md: number; lg: number; xl: number; xxl: number };
-  radii: { sm: number; md: number; lg: number; pill: number };
+  radii: { sm: number; md: number; lg: number; xl: number; pill: number };
   typography: {
-    title: { fontSize: number; fontWeight: '700' };
-    subtitle: { fontSize: number; fontWeight: '600' };
-    body: { fontSize: number; fontWeight: '400' };
-    caption: { fontSize: number; fontWeight: '400' };
-    button: { fontSize: number; fontWeight: '600' };
+    /** Big screen title (26). */
+    title: TextStyle;
+    /** Section/screen heading (20). */
+    heading: TextStyle;
+    subtitle: TextStyle;
+    body: TextStyle;
+    caption: TextStyle;
+    /** Uppercase section label (11, letterspaced). */
+    label: TextStyle;
+    button: TextStyle;
   };
 }
+
+const fonts = {
+  regular: 'Rubik_400Regular',
+  medium: 'Rubik_500Medium',
+  semibold: 'Rubik_600SemiBold',
+  bold: 'Rubik_700Bold',
+};
 
 /** Demo brand from the reference prototype — replace to rebrand the app. */
 export const defaultTheme: ThemeTokens = {
   brand: {
     name: 'Fogo & Brasa',
     tagline: 'Churrascaria',
+    monogram: 'F',
   },
   colors: {
-    primary: '#C2410C',
-    primaryPressed: '#9A3412',
-    onPrimary: '#FFFFFF',
-    background: '#FAF7F5',
+    background: '#F7F5F1',
     surface: '#FFFFFF',
-    surfacePressed: '#F5EFEA',
-    text: '#1C1917',
-    textMuted: '#78716C',
-    border: '#E7E5E4',
-    danger: '#DC2626',
-    dangerSoft: '#FEE2E2',
-    success: '#16A34A',
-    successSoft: '#DCFCE7',
-    warning: '#D97706',
-    warningSoft: '#FEF3C7',
-    info: '#2563EB',
-    infoSoft: '#DBEAFE',
-    neutralSoft: '#F1F5F9',
-    overlay: 'rgba(28, 25, 23, 0.5)',
-    statusQueued: '#64748B',
-    statusPreparing: '#D97706',
-    statusReady: '#16A34A',
-    statusDelivered: '#78716C',
+    surfacePressed: '#F2EEE7',
+    neutralSoft: '#F2EEE7',
+    text: '#211E1A',
+    textSecondary: '#57534C',
+    textMuted: '#8C867C',
+    textFaint: '#B4AEA4',
+    onPrimary: '#FFFFFF',
+    onDark: '#FFFFFF',
+    border: '#EBE6DE',
+    divider: '#F1ECE4',
+    primary: '#C4472A',
+    primaryPressed: '#9E3319',
+    primarySoft: '#FBEDE8',
+    primarySoftBorder: '#E8B3A3',
+    dark: '#211E1A',
+    darkPressed: '#3A352F',
+    success: '#3B7A57',
+    successSoft: '#E4EEE7',
+    successSofter: '#F1F6F2',
+    successBorder: '#C9E0D1',
+    successBorderStrong: '#A9CDB6',
+    warning: '#B5711C',
+    warningSoft: '#F6EBD8',
+    warningBorder: '#E6D2AC',
+    warningDeep: '#8A6A2E',
+    gold: '#C8A23A',
+    danger: '#C4472A',
+    dangerSoft: '#FBEDE8',
+    track: '#E9E4DB',
+    overlay: 'rgba(33, 30, 26, 0.5)',
   },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
-  radii: { sm: 6, md: 10, lg: 16, pill: 999 },
+  fonts,
+  spacing: { xs: 4, sm: 8, md: 16, lg: 22, xl: 32, xxl: 48 },
+  radii: { sm: 10, md: 13, lg: 16, xl: 18, pill: 999 },
   typography: {
-    title: { fontSize: 24, fontWeight: '700' },
-    subtitle: { fontSize: 18, fontWeight: '600' },
-    body: { fontSize: 16, fontWeight: '400' },
-    caption: { fontSize: 13, fontWeight: '400' },
-    button: { fontSize: 16, fontWeight: '600' },
+    title: { fontFamily: fonts.bold, fontSize: 26, letterSpacing: -0.6 },
+    heading: { fontFamily: fonts.bold, fontSize: 20 },
+    subtitle: { fontFamily: fonts.semibold, fontSize: 16 },
+    body: { fontFamily: fonts.regular, fontSize: 14 },
+    caption: { fontFamily: fonts.regular, fontSize: 12 },
+    label: {
+      fontFamily: fonts.semibold,
+      fontSize: 11,
+      textTransform: 'uppercase',
+      letterSpacing: 1.2,
+    },
+    button: { fontFamily: fonts.semibold, fontSize: 16 },
   },
 };

@@ -1,0 +1,26 @@
+import { createStyles } from '../../../theme/create-styles';
+
+export const useStyles = createStyles((theme) => ({
+  title: theme.typography.title,
+  heading: theme.typography.heading,
+  subtitle: theme.typography.subtitle,
+  body: theme.typography.body,
+  caption: theme.typography.caption,
+  label: theme.typography.label,
+  colorDefault: { color: theme.colors.text },
+  colorSecondary: { color: theme.colors.textSecondary },
+  colorMuted: { color: theme.colors.textMuted },
+  colorFaint: { color: theme.colors.textFaint },
+  colorPrimary: { color: theme.colors.primary },
+  colorDanger: { color: theme.colors.danger },
+  colorSuccess: { color: theme.colors.success },
+  colorWarning: { color: theme.colors.warning },
+  colorOnPrimary: { color: theme.colors.onPrimary },
+  colorOnDark: { color: theme.colors.onDark },
+  weightRegular: { fontFamily: theme.fonts.regular },
+  weightMedium: { fontFamily: theme.fonts.medium },
+  weightSemibold: { fontFamily: theme.fonts.semibold },
+  weightBold: { fontFamily: theme.fonts.bold },
+  alignCenter: { textAlign: 'center' },
+  alignRight: { textAlign: 'right' },
+}));
