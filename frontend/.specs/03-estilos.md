@@ -52,6 +52,8 @@ Exemplo do porquê: as etapas não atingidas do stepper de cozinha usam `#B4AEA4
 
 **Nenhum estilo inline. Nunca.** JSX não carrega `style={{ … }}`.
 
+Isso vale para **toda prop de estilo**, não só `style`: `contentContainerStyle`, `columnWrapperStyle`, `headerStyle`, `headerTitleStyle`, `contentStyle`. E vale fora do JSX também — as `screenOptions` do expo-router carregam objetos de estilo que nenhum seletor de JSX alcança; elas vivem em [`src/styles/navigation.styles.ts`](../src/styles/navigation.styles.ts).
+
 Todo estilo vive em um arquivo `*.styles.ts` ao lado do componente/tela, construído com o helper `createStyles`.
 
 ```tsx
@@ -98,6 +100,7 @@ export function OrderCard() {
 |---|---|---|
 | Componente (`src/components/**`) | **sibling**, na mesma pasta | `order-card/order-card.styles.ts` |
 | Tela (`app/**`) | `src/styles/screens/<tela>.styles.ts` | `src/styles/screens/order-detail.styles.ts` |
+| Navegador (`screenOptions`) | `src/styles/navigation.styles.ts` | `headerStyle`, `contentStyle` |
 
 Telas não têm sibling porque `app/` é roteamento — o Expo Router trata cada arquivo daquela árvore como rota. Um `*.styles.ts` ali viraria rota fantasma.
 
@@ -148,7 +151,7 @@ Antes de escrever qualquer estilo, cheque se o caso já é atendido por `variant
 
 ## Como isso é garantido
 
-- **Lint**: `eslint.config.js` tem uma regra `no-restricted-syntax` que rejeita `style={{ … }}` em qualquer `.tsx` de `app/` e `src/`. Não é convenção de boa vontade — quebra o CI.
+- **Lint**: `eslint.config.js` tem regras `no-restricted-syntax` que rejeitam objeto de estilo inline em cinco formas — `style={{…}}`, dentro de array, dentro do callback de `Pressable`, em qualquer prop `*Style`, e em propriedade `*Style` de objeto de opções. Não é convenção de boa vontade — quebra o CI.
 - **Definition of Done**: `../../.specs/05-padroes-de-codigo.md` exige lint limpo.
 
 Se o lint acusar e você achar que é caso de exceção legítima (seção acima), use `// eslint-disable-next-line no-restricted-syntax` **com um comentário explicando o valor de runtime**. Um disable sem justificativa é bug de review.

@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import { PhoneFrame } from '@/components/phone-frame/phone-frame';
 import { useAuth } from '@/hooks/use-auth';
 import { t } from '@/i18n';
+import { useStyles as useNavigationStyles } from '@/styles/navigation.styles';
 import { ThemeProvider, useTheme } from '@/theme/theme-provider';
 
 void SplashScreen.preventAutoHideAsync();
@@ -23,16 +24,17 @@ void SplashScreen.preventAutoHideAsync();
  */
 function RootStack() {
   const theme = useTheme();
+  const styles = useNavigationStyles();
   const { isAuthenticated } = useAuth();
 
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: theme.colors.background },
+        headerStyle: styles.header,
         headerShadowVisible: false,
         headerTintColor: theme.colors.text,
-        headerTitleStyle: { fontFamily: theme.fonts.bold, fontSize: 20 },
-        contentStyle: { backgroundColor: theme.colors.background },
+        headerTitleStyle: styles.headerTitle,
+        contentStyle: styles.screenContent,
       }}
     >
       <Stack.Protected guard={!isAuthenticated}>

@@ -33,6 +33,27 @@ const noInlineStyleObjectInCallback = {
     'Sem estilo inline: declare a variante no *.styles.ts e componha no callback. Ver frontend/.specs/03-estilos.md.',
 };
 
+/**
+ * `style` is not the only style prop: contentContainerStyle, columnWrapperStyle,
+ * headerStyle and friends all take style objects too.
+ */
+const noInlineStyleObjectInNamedStyleProp = {
+  selector:
+    "JSXAttribute[name.name=/[Ss]tyle$/]:not([name.name='style']) > JSXExpressionContainer > ObjectExpression",
+  message:
+    'Sem estilo inline: qualquer prop *Style vai para o *.styles.ts. Ver frontend/.specs/03-estilos.md.',
+};
+
+/**
+ * And navigator options carry styles outside JSX entirely — expo-router takes
+ * `screenOptions={{ headerStyle: { … } }}`, which no JSX selector reaches.
+ */
+const noInlineStyleObjectInOptions = {
+  selector: 'Property[key.name=/[Ss]tyle$/] > ObjectExpression',
+  message:
+    'Sem estilo inline: mova a opção de navegação para src/styles/navigation.styles.ts. Ver frontend/.specs/03-estilos.md.',
+};
+
 module.exports = defineConfig([
   expoConfig,
   {
@@ -46,6 +67,8 @@ module.exports = defineConfig([
         noInlineStyleObject,
         noInlineStyleObjectInArray,
         noInlineStyleObjectInCallback,
+        noInlineStyleObjectInNamedStyleProp,
+        noInlineStyleObjectInOptions,
       ],
     },
   },
