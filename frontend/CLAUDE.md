@@ -44,9 +44,11 @@ A seta não pula etapa. **Tela nunca importa `src/api`, `src/ws` ou `src/db`** �
 ## Comandos
 
 ```bash
-npx expo start                    # Expo Go / simulador
+npm start                         # Expo Go / simulador — Metro na 8082
 npm run typecheck && npm run lint && npm test
 ```
+
+Use `npm start`, não `npx expo start`: a porta do Metro é **8082**, fixada nos scripts porque o Docker Desktop ocupa a 8081. Backend na 3000.
 
 `npm run lint` limpo inclui **zero estilo inline** — é regra automática, não revisão manual.
 

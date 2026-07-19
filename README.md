@@ -26,7 +26,7 @@ npm run start:dev             # http://localhost:3000/api
 # 2. app
 cd ../frontend
 npm install
-npx expo start                # Expo Go / simulador
+npm start                     # Expo Go / simulador (Metro na 8082)
 ```
 
 Login de demonstração: usuário `demo`, PIN `1234` (ou `joao`/`maria` para o

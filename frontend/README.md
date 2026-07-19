@@ -72,13 +72,15 @@ npm install
 # — em dispositivo físico, troque em app.json > expo.extra.apiUrl/wsUrl
 #   pelo IP da máquina na rede local (ex.: http://192.168.0.10:3000/api)
 
-npx expo start          # dev (Expo Go / simulador iOS / emulador Android)
+npm start               # dev (Expo Go / simulador iOS / emulador Android)
 
 # qualidade
 npm run typecheck       # tsc --noEmit (strict)
 npm run lint            # expo lint
 npm test                # jest (componentes, stores, i18n)
 ```
+
+**Portas**: o Metro roda na **8082** (fixada nos scripts do `package.json`), não na 8081 padrão — o Docker Desktop ocupa a 8081 de forma permanente e o prompt "Use port 8082 instead?" apareceria a cada `start`. O backend fica na **3000**. Use `npm start`, não `npx expo start`, para herdar a porta.
 
 Operador de demonstração (seed do backend): usuário `demo`, PIN `1234`;
 usuários `joao` e `maria` caem no fluxo de 1º acesso (criar PIN).
