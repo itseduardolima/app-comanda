@@ -9,13 +9,13 @@
 Como **operador (garçom)**, quero **marcar uma comanda como paga através da API**, para que **o app possa registrar o fechamento da conta sem processar nenhum pagamento de fato**.
 
 ## Critérios de aceite
-- [ ] `POST /api/orders/:id/close` muda `payment_status` de `unpaid` para `paid`.
-- [ ] O endpoint preenche `closed_at` com o timestamp do fechamento (ISO 8601 UTC).
-- [ ] O endpoint registra/confirma o `operator_id` do operador autenticado (via JWT) como quem fechou a comanda.
-- [ ] Chamar `close` em uma comanda já `paid` retorna erro (ex.: `400/409`), não reprocessa o fechamento.
-- [ ] Chamar `close` em uma comanda inexistente retorna `404 NotFoundException`.
-- [ ] A resposta retorna a comanda atualizada (com `paymentStatus: "paid"` e `closedAt`).
-- [ ] Nenhum campo de cobrança, id de transação, aprovação ou webhook é criado ou chamado — `payment_status` é a única mudança de estado.
+- [x] `POST /api/orders/:id/close` muda `payment_status` de `unpaid` para `paid`.
+- [x] O endpoint preenche `closed_at` com o timestamp do fechamento (ISO 8601 UTC).
+- [x] O endpoint registra/confirma o `operator_id` do operador autenticado (via JWT) como quem fechou a comanda.
+- [x] Chamar `close` em uma comanda já `paid` retorna erro (ex.: `400/409`), não reprocessa o fechamento.
+- [x] Chamar `close` em uma comanda inexistente retorna `404 NotFoundException`.
+- [x] A resposta retorna a comanda atualizada (com `paymentStatus: "paid"` e `closedAt`).
+- [x] Nenhum campo de cobrança, id de transação, aprovação ou webhook é criado ou chamado — `payment_status` é a única mudança de estado.
 
 ## Escopo técnico
 - Referência: `.specs/03-api-contrato.md` (`POST /api/orders/:id/close`), `.specs/02-modelo-de-dados.md` (seção "Sobre pagamento": `unpaid → paid` + `closed_at`), `.specs/01-arquitetura.md` (`OrdersModule` → `closeOrder`).
@@ -31,8 +31,8 @@ Como **operador (garçom)**, quero **marcar uma comanda como paga através da AP
 - Sprint 3 — HU-22 (criar comanda) e HU-24 (detalhe da comanda) precisam existir para haver uma comanda a fechar.
 
 ## Definition of Done
-- [ ] Código em inglês, UI via i18n
-- [ ] Tipos (`tsc`) e lint OK
-- [ ] Testes relevantes passando (unidade do `OrdersService.closeOrder` + e2e do endpoint, incluindo caso de comanda já paga e comanda inexistente)
-- [ ] Spec em `.specs/` atualizada, se o comportamento mudou
-- [ ] Nenhuma lógica de pagamento/cobrança introduzida
+- [x] Código em inglês, UI via i18n
+- [x] Tipos (`tsc`) e lint OK
+- [x] Testes relevantes passando (unidade do `OrdersService.closeOrder` + e2e do endpoint, incluindo caso de comanda já paga e comanda inexistente)
+- [x] Spec em `.specs/` atualizada, se o comportamento mudou
+- [x] Nenhuma lógica de pagamento/cobrança introduzida

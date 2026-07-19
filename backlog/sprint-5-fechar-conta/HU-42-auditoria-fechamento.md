@@ -9,11 +9,11 @@
 Como **gerente do restaurante**, quero **saber qual operador fechou cada comanda**, para que **eu tenha rastreabilidade sobre quem marcou uma conta como paga, já que esse é um registro manual sem validação de pagamento real por trás**.
 
 ## Critérios de aceite
-- [ ] O `operator_id` de quem executou `closeOrder` (HU-38) é persistido no `order` (campo já existente no modelo) e nunca sobrescrito após o fechamento.
-- [ ] `GET /api/orders/:id` retorna, para comandas `paid`, os dados do operador que fechou (id e nome), sem exigir consulta extra no app.
-- [ ] Na tela `04 Detalhe da comanda` (ou equivalente para comandas pagas), é exibido de forma visível "Fechada por: <nome do operador>" quando `payment_status: paid`.
-- [ ] Se o operador autenticado no momento do fechamento for diferente do operador que abriu a comanda, ambos os dados continuam corretos e distintos (quem abriu vs. quem fechou).
-- [ ] Não é possível fechar uma comanda sem um operador autenticado (o endpoint exige JWT válido — reforça o que já é regra geral da API).
+- [x] O `operator_id` de quem executou `closeOrder` (HU-38) é persistido no `order` (campo já existente no modelo) e nunca sobrescrito após o fechamento.
+- [x] `GET /api/orders/:id` retorna, para comandas `paid`, os dados do operador que fechou (id e nome), sem exigir consulta extra no app.
+- [x] Na tela `04 Detalhe da comanda` (ou equivalente para comandas pagas), é exibido de forma visível "Fechada por: <nome do operador>" quando `payment_status: paid`.
+- [x] Se o operador autenticado no momento do fechamento for diferente do operador que abriu a comanda, ambos os dados continuam corretos e distintos (quem abriu vs. quem fechou).
+- [x] Não é possível fechar uma comanda sem um operador autenticado (o endpoint exige JWT válido — reforça o que já é regra geral da API).
 
 ## Escopo técnico
 - Referência: `.specs/02-modelo-de-dados.md` ("Recomendação de auditoria: registrar `operator_id` de quem fechou — já presente no `order`"), `.specs/00-contexto-projeto.md` (risco "Fechar conta = registro manual... log de qual operador fechou").
@@ -28,8 +28,8 @@ Como **gerente do restaurante**, quero **saber qual operador fechou cada comanda
 - HU-38 (endpoint `closeOrder`).
 
 ## Definition of Done
-- [ ] Código em inglês, UI via i18n
-- [ ] Tipos (`tsc`) e lint OK
-- [ ] Testes relevantes passando (verifica que `operator_id` do fechamento é o do operador autenticado na chamada)
-- [ ] Spec em `.specs/` atualizada, se o comportamento mudou
-- [ ] Nenhuma lógica de pagamento/cobrança introduzida
+- [x] Código em inglês, UI via i18n
+- [x] Tipos (`tsc`) e lint OK
+- [x] Testes relevantes passando (verifica que `operator_id` do fechamento é o do operador autenticado na chamada)
+- [x] Spec em `.specs/` atualizada, se o comportamento mudou
+- [x] Nenhuma lógica de pagamento/cobrança introduzida

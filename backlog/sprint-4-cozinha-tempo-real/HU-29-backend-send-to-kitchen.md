@@ -9,12 +9,12 @@
 Como **garçom (operador)**, quero **enviar os itens da comanda para a cozinha**, para que **a equipe da cozinha saiba o que precisa preparar, com um ticket numerado para acompanhamento**.
 
 ## Critérios de aceite
-- [ ] `POST /api/orders/:id/send-to-kitchen` cria um `kitchen_ticket` novo associado ao `order`, com número sequencial (ex.: `#1404`).
-- [ ] Todos os `order_item` do pedido ainda não enviados têm seu `kitchen_status` definido como `queued`.
-- [ ] O endpoint retorna o ticket criado (`id`, `number`, `orderId`, `createdAt`) e a lista de itens enfileirados.
-- [ ] Chamar o endpoint numa comanda sem itens retorna erro de validação (não cria ticket vazio).
-- [ ] Itens já enviados anteriormente (status diferente de recém-adicionado) não são reenfileirados na mesma chamada — apenas os novos itens pendentes de envio.
-- [ ] Endpoint protegido por JWT (`Authorization: Bearer`), como os demais endpoints de `OrdersModule`.
+- [x] `POST /api/orders/:id/send-to-kitchen` cria um `kitchen_ticket` novo associado ao `order`, com número sequencial (ex.: `#1404`).
+- [x] Todos os `order_item` do pedido ainda não enviados têm seu `kitchen_status` definido como `queued`.
+- [x] O endpoint retorna o ticket criado (`id`, `number`, `orderId`, `createdAt`) e a lista de itens enfileirados.
+- [x] Chamar o endpoint numa comanda sem itens retorna erro de validação (não cria ticket vazio).
+- [x] Itens já enviados anteriormente (status diferente de recém-adicionado) não são reenfileirados na mesma chamada — apenas os novos itens pendentes de envio.
+- [x] Endpoint protegido por JWT (`Authorization: Bearer`), como os demais endpoints de `OrdersModule`.
 
 ## Escopo técnico
 - Módulo `KitchenModule`, rota descrita em `.specs/03-api-contrato.md` (seção Kitchen — `KitchenModule`).
@@ -30,8 +30,8 @@ Como **garçom (operador)**, quero **enviar os itens da comanda para a cozinha**
 - HU-25 (Backend: Orders — itens da comanda), do Sprint 3 — precisa existir itens na comanda antes de enviá-los à cozinha.
 
 ## Definition of Done
-- [ ] Código em inglês, UI via i18n
-- [ ] Tipos (`tsc`) e lint OK
-- [ ] Testes relevantes passando (unidade do service + e2e do controller)
-- [ ] Spec em `.specs/` atualizada, se o comportamento mudou
-- [ ] Nenhuma lógica de pagamento/cobrança introduzida
+- [x] Código em inglês, UI via i18n
+- [x] Tipos (`tsc`) e lint OK
+- [x] Testes relevantes passando (unidade do service + e2e do controller)
+- [x] Spec em `.specs/` atualizada, se o comportamento mudou
+- [x] Nenhuma lógica de pagamento/cobrança introduzida

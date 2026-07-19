@@ -9,12 +9,12 @@
 Como **garçom**, quero **continuar anotando pedidos mesmo quando a rede do salão cair**, para que **eu não perca o pedido do cliente e ele seja sincronizado automaticamente quando a conexão voltar**.
 
 ## Critérios de aceite
-- [ ] Camada `src/db/` com `expo-sqlite` armazena localmente comandas e itens (espelhando o essencial do modelo: `order`, `order_item`) como cache/baseline local.
-- [ ] Toda mutação (criar comanda, adicionar/editar/remover item) é escrita primeiro localmente e enfileirada para sincronizar com o backend, mesmo sem rede no momento.
-- [ ] Ao reconectar, a fila de sincronização é processada em ordem (FIFO) contra a API real, e o app confirma sucesso ou marca falha por item da fila.
-- [ ] UI indica visualmente quando uma comanda/item ainda está "pendente de sincronização".
-- [ ] Nenhuma mutação trava a UI esperando rede — toda ação do garçom responde imediatamente a partir do estado local.
-- [ ] Comportamento coberto por pelo menos um teste simulando perda de conexão durante uma mutação.
+- [x] Camada `src/db/` com `expo-sqlite` armazena localmente comandas e itens (espelhando o essencial do modelo: `order`, `order_item`) como cache/baseline local.
+- [x] Toda mutação (criar comanda, adicionar/editar/remover item) é escrita primeiro localmente e enfileirada para sincronizar com o backend, mesmo sem rede no momento.
+- [x] Ao reconectar, a fila de sincronização é processada em ordem (FIFO) contra a API real, e o app confirma sucesso ou marca falha por item da fila.
+- [x] UI indica visualmente quando uma comanda/item ainda está "pendente de sincronização".
+- [x] Nenhuma mutação trava a UI esperando rede — toda ação do garçom responde imediatamente a partir do estado local.
+- [x] Comportamento coberto por pelo menos um teste simulando perda de conexão durante uma mutação.
 
 ## Escopo técnico
 - Referências: `.specs/05-padroes-de-codigo.md` ("toda mutação deve tolerar rede caindo"), `.specs/01-arquitetura.md` (offline-first, `expo-sqlite`), `frontend/README.md` (`src/db/` — camada expo-sqlite + sincronização).
@@ -27,8 +27,8 @@ Como **garçom**, quero **continuar anotando pedidos mesmo quando a rede do sal�
 - HU-27 (integração de comandas com API real)
 
 ## Definition of Done
-- [ ] Código em inglês, UI via i18n
-- [ ] Tipos (`tsc`) e lint OK
-- [ ] Testes relevantes passando
-- [ ] Spec em `.specs/` atualizada, se o comportamento mudou
-- [ ] Nenhuma lógica de pagamento/cobrança introduzida
+- [x] Código em inglês, UI via i18n
+- [x] Tipos (`tsc`) e lint OK
+- [x] Testes relevantes passando
+- [x] Spec em `.specs/` atualizada, se o comportamento mudou
+- [x] Nenhuma lógica de pagamento/cobrança introduzida

@@ -9,12 +9,12 @@
 Como **operador (garçom)**, quero **digitar meu usuário na tela de Login**, para que **o app me leve ao passo certo (criar PIN ou verificar PIN) de acordo com meu histórico de acesso**.
 
 ## Critérios de aceite
-- [ ] Tela `00 Login` (já existente como mock no Sprint 1) passa a chamar `POST /api/auth/login` de verdade com o `username` digitado.
-- [ ] Se a resposta tiver `pinSet: false`, navega para a tela `00A Criar PIN` levando o `operatorId`.
-- [ ] Se `pinSet: true`, navega para a tela `00B Acesso rápido por PIN` levando o `operatorId`.
-- [ ] Usuário inexistente (erro 404 da API) exibe mensagem de erro amigável em português, sem travar a tela.
-- [ ] Estado de carregamento (loading) exibido durante a chamada à API.
-- [ ] Nenhuma string de UI hardcoded — textos via i18n (`src/i18n/`), conforme `.specs/06-glossario.md`.
+- [x] Tela `00 Login` (já existente como mock no Sprint 1) passa a chamar `POST /api/auth/login` de verdade com o `username` digitado.
+- [x] Se a resposta tiver `pinSet: false`, navega para a tela `00A Criar PIN` levando o `operatorId`.
+- [x] Se `pinSet: true`, navega para a tela `00B Acesso rápido por PIN` levando o `operatorId`.
+- [x] Usuário inexistente (erro 404 da API) exibe mensagem de erro amigável em português, sem travar a tela.
+- [x] Estado de carregamento (loading) exibido durante a chamada à API.
+- [x] Nenhuma string de UI hardcoded — textos via i18n (`src/i18n/`), conforme `.specs/06-glossario.md`.
 
 ## Escopo técnico
 - Spec: `.specs/03-api-contrato.md` (Auth), `.specs/04-fluxos.md` (4.1), `.specs/00-contexto-projeto.md` (tela `00`).
@@ -30,8 +30,8 @@ Como **operador (garçom)**, quero **digitar meu usuário na tela de Login**, pa
 - Sprint 1 — navegação e tela de Login mockada já implementadas.
 
 ## Definition of Done
-- [ ] Código em inglês, UI via i18n
-- [ ] Tipos (`tsc`) e lint OK
+- [x] Código em inglês, UI via i18n
+- [x] Tipos (`tsc`) e lint OK
 - [ ] Testes relevantes passando (componente/hook com React Native Testing Library)
-- [ ] Spec em `.specs/` atualizada, se o comportamento mudou
-- [ ] Nenhuma lógica de pagamento/cobrança introduzida
+- [x] Spec em `.specs/` atualizada, se o comportamento mudou
+- [x] Nenhuma lógica de pagamento/cobrança introduzida

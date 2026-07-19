@@ -9,12 +9,12 @@
 Como **operador (garçom) no meu primeiro acesso**, quero **definir e confirmar um PIN de 4 dígitos**, para que **eu possa usar esse PIN para entrar rapidamente nos próximos acessos**.
 
 ## Critérios de aceite
-- [ ] Tela `00A Criar PIN` (mock do Sprint 1) permite digitar um PIN de 4 dígitos e depois confirmá-lo digitando novamente.
-- [ ] Se a confirmação não bater com o PIN original, exibe erro e permite tentar novamente sem sair da tela.
-- [ ] Ao confirmar com sucesso, chama `POST /api/auth/pin/create` com `{ operatorId, pin }`.
-- [ ] Resposta com `accessToken` é entregue para a camada de sessão (HU-18) e o operador é redirecionado para a tela `01 Comandas`.
-- [ ] Erro da API (ex.: PIN já existente) exibe mensagem amigável em português via i18n.
-- [ ] Teclado numérico exibido é adequado para entrada de PIN (não teclado alfabético completo).
+- [x] Tela `00A Criar PIN` (mock do Sprint 1) permite digitar um PIN de 4 dígitos e depois confirmá-lo digitando novamente.
+- [x] Se a confirmação não bater com o PIN original, exibe erro e permite tentar novamente sem sair da tela.
+- [x] Ao confirmar com sucesso, chama `POST /api/auth/pin/create` com `{ operatorId, pin }`.
+- [x] Resposta com `accessToken` é entregue para a camada de sessão (HU-18) e o operador é redirecionado para a tela `01 Comandas`.
+- [x] Erro da API (ex.: PIN já existente) exibe mensagem amigável em português via i18n.
+- [x] Teclado numérico exibido é adequado para entrada de PIN (não teclado alfabético completo).
 
 ## Escopo técnico
 - Spec: `.specs/03-api-contrato.md` (Auth), `.specs/04-fluxos.md` (4.1), `.specs/00-contexto-projeto.md` (tela `00A`).
@@ -29,8 +29,8 @@ Como **operador (garçom) no meu primeiro acesso**, quero **definir e confirmar 
 - HU-14 (tela de Login deve entregar o `operatorId` para esta tela).
 
 ## Definition of Done
-- [ ] Código em inglês, UI via i18n
-- [ ] Tipos (`tsc`) e lint OK
+- [x] Código em inglês, UI via i18n
+- [x] Tipos (`tsc`) e lint OK
 - [ ] Testes relevantes passando (componente/hook com React Native Testing Library)
-- [ ] Spec em `.specs/` atualizada, se o comportamento mudou
-- [ ] Nenhuma lógica de pagamento/cobrança introduzida
+- [x] Spec em `.specs/` atualizada, se o comportamento mudou
+- [x] Nenhuma lógica de pagamento/cobrança introduzida

@@ -9,12 +9,12 @@
 Como **operador (garçom)**, quero **que uma mesa só volte a ficar Livre quando todas as comandas abertas nela estiverem pagas**, para que **eu não sente um novo cliente numa mesa que ainda tem uma conta pendente de outra pessoa**.
 
 ## Critérios de aceite
-- [ ] Definida e documentada a regra de agregação: uma `table` é `occupied` se tiver **pelo menos uma** `order` com `payment_status: unpaid`; só passa a `free` quando **todas** as `order` associadas a ela estiverem `paid` (ou não houver nenhuma `order` aberta).
-- [ ] Ao fechar uma comanda (`closeOrder`, HU-38) que **não é a última** comanda aberta da mesa, o `table.status` permanece `occupied`.
-- [ ] Ao fechar a **última** comanda aberta de uma mesa, o `table.status` muda automaticamente para `free`.
-- [ ] O grid de mesas (`GET /api/tables`, tela `1B Escolher mesa`) reflete o status correto após cada fechamento, sem exigir intervenção manual do operador.
-- [ ] Caso especial coberto por teste: Mesa 07 com duas comandas (João `unpaid`, Maria `unpaid`) — fechar a de João mantém a mesa `occupied`; fechar em seguida a de Maria libera a mesa.
-- [ ] A regra fica centralizada no backend (fonte da verdade), não duplicada/reimplementada no cliente.
+- [x] Definida e documentada a regra de agregação: uma `table` é `occupied` se tiver **pelo menos uma** `order` com `payment_status: unpaid`; só passa a `free` quando **todas** as `order` associadas a ela estiverem `paid` (ou não houver nenhuma `order` aberta).
+- [x] Ao fechar uma comanda (`closeOrder`, HU-38) que **não é a última** comanda aberta da mesa, o `table.status` permanece `occupied`.
+- [x] Ao fechar a **última** comanda aberta de uma mesa, o `table.status` muda automaticamente para `free`.
+- [x] O grid de mesas (`GET /api/tables`, tela `1B Escolher mesa`) reflete o status correto após cada fechamento, sem exigir intervenção manual do operador.
+- [x] Caso especial coberto por teste: Mesa 07 com duas comandas (João `unpaid`, Maria `unpaid`) — fechar a de João mantém a mesa `occupied`; fechar em seguida a de Maria libera a mesa.
+- [x] A regra fica centralizada no backend (fonte da verdade), não duplicada/reimplementada no cliente.
 
 ## Escopo técnico
 - Referência: `.specs/02-modelo-de-dados.md` (relacionamento `table` 1—N `order`, ponto em aberto "Total da mesa"/regra de agregação), `.specs/00-contexto-projeto.md` (risco "Múltiplas comandas por mesa: definir regras... o que acontece ao fechar uma comanda e deixar outra aberta").
@@ -30,8 +30,8 @@ Como **operador (garçom)**, quero **que uma mesa só volte a ficar Livre quando
 - Sprint 3 — HU-21 (`TablesModule` já implementado).
 
 ## Definition of Done
-- [ ] Código em inglês, UI via i18n
-- [ ] Tipos (`tsc`) e lint OK
-- [ ] Testes relevantes passando (cenário de múltiplas comandas por mesa, incluindo o caso "fecha uma, mesa continua ocupada")
-- [ ] Spec em `.specs/` atualizada (regra de agregação deixa de ser "ponto em aberto" em `02-modelo-de-dados.md`)
-- [ ] Nenhuma lógica de pagamento/cobrança introduzida
+- [x] Código em inglês, UI via i18n
+- [x] Tipos (`tsc`) e lint OK
+- [x] Testes relevantes passando (cenário de múltiplas comandas por mesa, incluindo o caso "fecha uma, mesa continua ocupada")
+- [x] Spec em `.specs/` atualizada (regra de agregação deixa de ser "ponto em aberto" em `02-modelo-de-dados.md`)
+- [x] Nenhuma lógica de pagamento/cobrança introduzida

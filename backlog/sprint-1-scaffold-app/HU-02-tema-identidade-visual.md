@@ -9,11 +9,11 @@
 Como **desenvolvedor**, quero **cores, tipografia, nome e logo isolados em uma camada de tema configurável (`src/theme/`)**, para que **o app sirva a qualquer restaurante trocando apenas a configuração, sem alterar código** (o produto é genérico; "Fogo & Brasa" é só o tema de exemplo do protótipo).
 
 ## Critérios de aceite
-- [ ] `src/theme/` expõe um objeto de tema (cores, tipografia, espaçamentos) consumido pelos componentes via hook/contexto (ex.: `useTheme()`), nunca hardcoded em cada tela.
-- [ ] Nome do estabelecimento e logo são configuráveis (constante/arquivo de config), não fixos como "Fogo & Brasa" no código.
-- [ ] Um tema de exemplo baseado no protótipo `App Garcom Fogo e Brasa.dc.html` é criado como valor padrão/demonstração.
-- [ ] Trocar os valores do tema (ex.: cor primária) reflete em todas as telas já existentes sem editar componentes individuais.
-- [ ] Suporte básico a modo claro/escuro OU justificativa documentada de que só um modo é suportado no MVP.
+- [x] `src/theme/` expõe um objeto de tema (cores, tipografia, espaçamentos) consumido pelos componentes via hook/contexto (ex.: `useTheme()`), nunca hardcoded em cada tela.
+- [x] Nome do estabelecimento e logo são configuráveis (constante/arquivo de config), não fixos como "Fogo & Brasa" no código.
+- [x] Um tema de exemplo baseado no protótipo `App Garcom Fogo e Brasa.dc.html` é criado como valor padrão/demonstração.
+- [x] Trocar os valores do tema (ex.: cor primária) reflete em todas as telas já existentes sem editar componentes individuais.
+- [x] Suporte básico a modo claro/escuro OU justificativa documentada de que só um modo é suportado no MVP.
 
 ## Escopo técnico
 - Referência: `frontend/README.md` (`src/theme/` — cores e tipografia do protótipo, tema/marca configurável), `.specs/00-contexto-projeto.md` (produto genérico, marca como configuração).
@@ -26,8 +26,8 @@ Como **desenvolvedor**, quero **cores, tipografia, nome e logo isolados em uma c
 - HU-01
 
 ## Definition of Done
-- [ ] Código em inglês, UI via i18n
-- [ ] Tipos (`tsc`) e lint OK
-- [ ] Testes relevantes passando
-- [ ] Spec em `.specs/` atualizada, se o comportamento mudou
-- [ ] Nenhuma lógica de pagamento/cobrança introduzida
+- [x] Código em inglês, UI via i18n
+- [x] Tipos (`tsc`) e lint OK
+- [x] Testes relevantes passando
+- [x] Spec em `.specs/` atualizada, se o comportamento mudou
+- [x] Nenhuma lógica de pagamento/cobrança introduzida
