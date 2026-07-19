@@ -6,8 +6,8 @@ import { Card } from '@/components/ui/card/card';
 import { Button } from '@/components/ui/button/button';
 import { Input } from '@/components/ui/input/input';
 import { Text } from '@/components/ui/text/text';
+import { useOrderActions } from '@/hooks/use-orders';
 import { t } from '@/i18n';
-import { useOrdersStore } from '@/store/orders.store';
 import { useTheme } from '@/theme/theme-provider';
 import { OrderType } from '@/types/order';
 
@@ -21,7 +21,7 @@ const TYPE_OPTIONS: { type: OrderType; labelKey: 'orders.table' | 'orders.counte
 export default function NewOrderScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const createOrderLocal = useOrdersStore((state) => state.createOrderLocal);
+  const { createOrderLocal } = useOrderActions();
   const [type, setType] = useState<OrderType | null>(null);
   const [customerName, setCustomerName] = useState('');
 

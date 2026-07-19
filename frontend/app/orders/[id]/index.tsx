@@ -1,18 +1,17 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import { ApiError, NetworkError } from '@/api/client';
 import { Badge } from '@/components/ui/badge/badge';
 import { Button } from '@/components/ui/button/button';
 import { Card } from '@/components/ui/card/card';
 import { Text } from '@/components/ui/text/text';
-import { useOrder } from '@/hooks/use-orders';
+import { useKitchenSocket } from '@/hooks/use-kitchen-socket';
+import { useOrder, useOrderActions } from '@/hooks/use-orders';
 import { useReceipt } from '@/hooks/use-receipt';
-import { useKitchenSocket } from '@/ws/use-kitchen-socket';
 import { formatCents, t } from '@/i18n';
-import { isLocalId, useOrdersStore } from '@/store/orders.store';
 import { useTheme } from '@/theme/theme-provider';
-import { OrderItem, orderTotal } from '@/types/order';
+import { ApiError, NetworkError } from '@/types/errors';
+import { isLocalId, OrderItem, orderTotal } from '@/types/order';
 
 function modifiersSummary(item: OrderItem): string | null {
   const modifiers = item.modifiers;
@@ -47,9 +46,7 @@ export default function OrderDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { order } = useOrder(id);
-  const removeItemLocal = useOrdersStore((state) => state.removeItemLocal);
-  const sendToKitchen = useOrdersStore((state) => state.sendToKitchen);
-  const closeOrder = useOrdersStore((state) => state.closeOrder);
+  const { removeItemLocal, sendToKitchen, closeOrder, resolveId } = useOrderActions();
   const [sending, setSending] = useState(false);
   const [closing, setClosing] = useState(false);
   const { generating, share } = useReceipt(theme.brand);
@@ -74,7 +71,9 @@ export default function OrderDetailScreen() {
   const isPaid = order.paymentStatus === 'paid';
 
   const handleSend = async () => {
-    if (isLocalId(useOrdersStore.getState().resolveId(order.id))) {
+    // A still-unsynced order cannot reach the kitchen — the ticket must be
+    // real before the cooks start (send-to-kitchen is online-only by design).
+    if (isLocalId(resolveId(order.id))) {
       Alert.alert(t('orderDetail.sendError'), t('common.networkError'));
       return;
     }

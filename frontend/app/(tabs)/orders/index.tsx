@@ -2,7 +2,6 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { OrderListFilter } from '@/api/orders';
 import { OrderCard } from '@/components/order-card/order-card';
 import { Button } from '@/components/ui/button/button';
 import { Chip } from '@/components/ui/chip/chip';
@@ -11,6 +10,7 @@ import { useNow } from '@/hooks/use-now';
 import { useOrders } from '@/hooks/use-orders';
 import { t } from '@/i18n';
 import { useTheme } from '@/theme/theme-provider';
+import { OrderListFilter } from '@/types/order';
 
 const FILTERS: { key: OrderListFilter; labelKey: 'orders.filterOpen' | 'orders.filterPaid' | 'orders.filterAll' }[] = [
   { key: 'open', labelKey: 'orders.filterOpen' },

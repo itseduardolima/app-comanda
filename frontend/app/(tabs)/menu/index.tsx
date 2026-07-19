@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button/button';
 import { Chip } from '@/components/ui/chip/chip';
 import { Text } from '@/components/ui/text/text';
 import { useMenu } from '@/hooks/use-menu';
+import { useOrderActions, useOrderOptional } from '@/hooks/use-orders';
 import { t, tCount } from '@/i18n';
-import { useOrdersStore } from '@/store/orders.store';
 import { useTheme } from '@/theme/theme-provider';
 import { MenuItem } from '@/types/menu';
 
@@ -24,8 +24,8 @@ export default function MenuScreen() {
   const { categories, loading, loadError, reload } = useMenu();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const order = useOrdersStore((state) => (orderId ? state.getOrder(orderId) : undefined));
-  const addItemLocal = useOrdersStore((state) => state.addItemLocal);
+  const order = useOrderOptional(orderId);
+  const { addItemLocal } = useOrderActions();
 
   const visibleCategories = useMemo(
     () =>

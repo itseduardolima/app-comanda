@@ -5,6 +5,7 @@ import { drain, enqueue, pendingCount, setSyncListener } from '../db/sync-queue'
 import { localStore } from '../db/schema';
 import { MenuItem } from '../types/menu';
 import {
+  isLocalId,
   KitchenStatus,
   KitchenTicket,
   Order,
@@ -14,14 +15,12 @@ import {
 } from '../types/order';
 import { Table } from '../types/table';
 
+export { isLocalId };
+
 let localIdCounter = 0;
 function newLocalId(prefix: string): string {
   localIdCounter += 1;
   return `local-${prefix}-${Date.now().toString(36)}-${localIdCounter}`;
-}
-
-export function isLocalId(id: string): boolean {
-  return id.startsWith('local-');
 }
 
 /** Mirrors the backend rule: unit price = base + chosen extras. Local estimate
@@ -351,6 +350,13 @@ setSyncListener({
     if (result.kind === 'add_item' && result.item) {
       const order = state.orders[result.item.orderId];
       if (order) {
+        // A concurrent refresh() may have replaced the order with the server
+        // baseline (which predates this item) — refetch instead of merging.
+        const hasLocalItem = order.items.some((item) => item.id === result.localId);
+        if (!hasLocalItem) {
+          void state.refreshOrder(result.item.orderId);
+          return;
+        }
         const updated: Order = {
           ...order,
           items: order.items.map((item) =>

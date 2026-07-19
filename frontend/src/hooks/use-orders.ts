@@ -47,3 +47,46 @@ export function useOrder(orderId: string): {
 
   return { order, refresh: () => refreshOrder(orderId) };
 }
+
+/** Optional variant for screens where the order context may be absent
+ * (e.g. Cardápio browsing without an open comanda). */
+export function useOrderOptional(orderId?: string): Order | undefined {
+  return useOrdersStore((state) => (orderId ? state.getOrder(orderId) : undefined));
+}
+
+/** Mutation and lookup actions — the only door screens use to change orders
+ * (frontend/.specs: tela → hook → store, never tela → store/api). */
+export function useOrderActions() {
+  const createOrderLocal = useOrdersStore((state) => state.createOrderLocal);
+  const addItemLocal = useOrdersStore((state) => state.addItemLocal);
+  const updateItemLocal = useOrdersStore((state) => state.updateItemLocal);
+  const removeItemLocal = useOrdersStore((state) => state.removeItemLocal);
+  const sendToKitchen = useOrdersStore((state) => state.sendToKitchen);
+  const closeOrder = useOrdersStore((state) => state.closeOrder);
+  const markDelivered = useOrdersStore((state) => state.markDelivered);
+  const resolveId = useOrdersStore((state) => state.resolveId);
+
+  return {
+    createOrderLocal,
+    addItemLocal,
+    updateItemLocal,
+    removeItemLocal,
+    sendToKitchen,
+    closeOrder,
+    markDelivered,
+    resolveId,
+  };
+}
+
+/** Kitchen tickets of an order (baseline for screens 4A–4D). */
+export function useKitchenTickets(orderId: string) {
+  const resolveId = useOrdersStore((state) => state.resolveId);
+  const tickets = useOrdersStore((state) => state.tickets[state.resolveId(orderId)] ?? []);
+  const loadTickets = useOrdersStore((state) => state.loadTickets);
+
+  useEffect(() => {
+    void loadTickets(orderId);
+  }, [orderId, loadTickets]);
+
+  return { tickets, resolveId };
+}

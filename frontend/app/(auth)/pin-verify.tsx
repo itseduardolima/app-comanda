@@ -2,7 +2,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as authApi from '@/api/auth';
 import { PinInput } from '@/components/pin-input/pin-input';
 import { Button } from '@/components/ui/button/button';
 import { Text } from '@/components/ui/text/text';
@@ -14,7 +13,7 @@ import { useTheme } from '@/theme/theme-provider';
 export default function PinVerifyScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { completeLogin } = useAuth();
+  const { verifyPin } = useAuth();
   const { operatorId, username } = useLocalSearchParams<{ operatorId: string; username: string }>();
 
   const [pin, setPin] = useState('');
@@ -25,8 +24,7 @@ export default function PinVerifyScreen() {
     setLoading(true);
     setError(null);
     try {
-      const auth = await authApi.verifyPin(operatorId, typed);
-      await completeLogin(auth);
+      await verifyPin(operatorId, typed);
     } catch {
       // Wrong PIN: show the error and clear for a new attempt (stay here).
       setError(t('auth.wrongPin'));

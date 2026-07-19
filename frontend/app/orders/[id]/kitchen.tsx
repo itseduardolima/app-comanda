@@ -1,20 +1,19 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import { ApiError } from '@/api/client';
 import { KitchenStatusStepper } from '@/components/kitchen-status-stepper/kitchen-status-stepper';
 import { Badge } from '@/components/ui/badge/badge';
 import { Button } from '@/components/ui/button/button';
 import { Card } from '@/components/ui/card/card';
 import { Text } from '@/components/ui/text/text';
-import { useNow, elapsedMinutes } from '@/hooks/use-now';
-import { useOrder } from '@/hooks/use-orders';
-import { t } from '@/i18n';
-import { useOrdersStore } from '@/store/orders.store';
-import { useTheme } from '@/theme/theme-provider';
 import { Chip } from '@/components/ui/chip/chip';
+import { useKitchenSocket } from '@/hooks/use-kitchen-socket';
+import { useNow, elapsedMinutes } from '@/hooks/use-now';
+import { useKitchenTickets, useOrder, useOrderActions } from '@/hooks/use-orders';
+import { t } from '@/i18n';
+import { useTheme } from '@/theme/theme-provider';
+import { ApiError } from '@/types/errors';
 import { KITCHEN_STATUS_SEQUENCE, KitchenStatus, OrderItem } from '@/types/order';
-import { useKitchenSocket } from '@/ws/use-kitchen-socket';
 
 const STAGE_LABEL_KEYS = {
   queued: 'kitchen.stepSent',
@@ -53,17 +52,11 @@ export default function KitchenScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { order } = useOrder(id);
   const { connected } = useKitchenSocket(id);
-  const loadTickets = useOrdersStore((state) => state.loadTickets);
-  const markDelivered = useOrdersStore((state) => state.markDelivered);
-  const resolveId = useOrdersStore((state) => state.resolveId);
-  const tickets = useOrdersStore((state) => state.tickets[resolveId(id)] ?? []);
+  const { tickets } = useKitchenTickets(id);
+  const { markDelivered } = useOrderActions();
   const now = useNow(15_000);
   const [stage, setStage] = useState<KitchenStatus | null>(null);
   const [markingId, setMarkingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    void loadTickets(id);
-  }, [id, loadTickets]);
 
   const sentItems = useMemo(
     () => (order?.items ?? []).filter((item) => item.kitchenTicketId),

@@ -1,7 +1,14 @@
-import { KitchenTicket, Order, OrderItem, OrderItemModifiers, OrderType } from '../types/order';
+import {
+  KitchenTicket,
+  Order,
+  OrderItem,
+  OrderItemModifiers,
+  OrderListFilter,
+  OrderType,
+} from '../types/order';
 import { request } from './client';
 
-export type OrderListFilter = 'open' | 'paid' | 'all';
+export type { OrderListFilter };
 
 export interface CreateOrderInput {
   type: OrderType;

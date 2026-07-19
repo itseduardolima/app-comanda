@@ -4,9 +4,9 @@ import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 import { Button } from '@/components/ui/button/button';
 import { Card } from '@/components/ui/card/card';
 import { Text } from '@/components/ui/text/text';
+import { useOrderActions } from '@/hooks/use-orders';
 import { useTables } from '@/hooks/use-tables';
 import { t } from '@/i18n';
-import { useOrdersStore } from '@/store/orders.store';
 import { useTheme } from '@/theme/theme-provider';
 import { Table } from '@/types/table';
 
@@ -20,7 +20,7 @@ export default function PickTableScreen() {
   const router = useRouter();
   const { customerName } = useLocalSearchParams<{ customerName?: string }>();
   const { tables, tableOrders, loading, loadError, reload, loadTableOrders } = useTables();
-  const createOrderLocal = useOrdersStore((state) => state.createOrderLocal);
+  const { createOrderLocal } = useOrderActions();
   const [expandedTableId, setExpandedTableId] = useState<string | null>(null);
 
   const openOrderHere = (table: Table) => {

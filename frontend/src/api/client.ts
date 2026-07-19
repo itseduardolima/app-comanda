@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { ApiError, NetworkError } from '../types/errors';
 
 /**
  * Base HTTP client. Reads the API URL from app.json `extra.apiUrl` (EAS env
@@ -25,24 +26,7 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
   onUnauthorized = handler;
 }
 
-export class ApiError extends Error {
-  constructor(
-    readonly statusCode: number,
-    message: string,
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
-
-/** Thrown when the request never reached the server (offline, timeout…). */
-export class NetworkError extends Error {
-  constructor(cause?: unknown) {
-    super('Network request failed');
-    this.name = 'NetworkError';
-    this.cause = cause;
-  }
-}
+export { ApiError, NetworkError };
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';

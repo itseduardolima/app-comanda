@@ -117,6 +117,13 @@ export async function drain(): Promise<void> {
           localStore.updateQueueEntry(entry.id, entry.attempts + 1, error.message);
           break;
         }
+        // 401/403 are session problems, not mutation problems: keep the entry
+        // and retry once a valid session exists — deleting here would silently
+        // lose offline work when the JWT expires mid-shift.
+        if (error instanceof ApiError && (error.statusCode === 401 || error.statusCode === 403)) {
+          localStore.updateQueueEntry(entry.id, entry.attempts + 1, error.message);
+          break;
+        }
         const message = error instanceof ApiError ? error.message : String(error);
         localStore.deleteQueueEntry(entry.id);
         listener?.onFailed(mutation, message);

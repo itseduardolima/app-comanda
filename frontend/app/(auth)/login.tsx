@@ -2,18 +2,19 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as authApi from '@/api/auth';
-import { ApiError } from '@/api/client';
 import { Button } from '@/components/ui/button/button';
 import { Input } from '@/components/ui/input/input';
 import { Text } from '@/components/ui/text/text';
+import { useAuth } from '@/hooks/use-auth';
 import { t } from '@/i18n';
 import { useTheme } from '@/theme/theme-provider';
+import { ApiError } from '@/types/errors';
 
 /** Screen 00 — Login: username step of the auth flow (HU-14). */
 export default function LoginScreen() {
   const theme = useTheme();
   const router = useRouter();
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +27,7 @@ export default function LoginScreen() {
     setLoading(true);
     setError(null);
     try {
-      const result = await authApi.login(trimmed);
+      const result = await login(trimmed);
       const params = { operatorId: result.operatorId, username: trimmed };
       if (result.pinSet) {
         router.push({ pathname: '/(auth)/pin-verify', params });

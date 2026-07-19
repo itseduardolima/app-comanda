@@ -2,20 +2,19 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as authApi from '@/api/auth';
-import { ApiError } from '@/api/client';
 import { PinInput } from '@/components/pin-input/pin-input';
 import { Button } from '@/components/ui/button/button';
 import { Text } from '@/components/ui/text/text';
 import { useAuth } from '@/hooks/use-auth';
 import { t } from '@/i18n';
 import { useTheme } from '@/theme/theme-provider';
+import { ApiError } from '@/types/errors';
 
 /** Screen 00A — first access: define and confirm a 4-digit PIN (HU-15). */
 export default function PinCreateScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { completeLogin } = useAuth();
+  const { createPin } = useAuth();
   const { operatorId, username } = useLocalSearchParams<{ operatorId: string; username: string }>();
 
   const [firstPin, setFirstPin] = useState<string | null>(null);
@@ -39,8 +38,7 @@ export default function PinCreateScreen() {
     setLoading(true);
     setError(null);
     try {
-      const auth = await authApi.createPin(operatorId, typed);
-      await completeLogin(auth);
+      await createPin(operatorId, typed);
       // Session guard flips and expo-router lands on the tabs (screen 01).
     } catch (err) {
       setError(err instanceof ApiError ? t('auth.pinCreateError') : t('common.networkError'));

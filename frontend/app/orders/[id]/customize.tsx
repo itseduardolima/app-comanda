@@ -6,8 +6,8 @@ import { Chip } from '@/components/ui/chip/chip';
 import { Input } from '@/components/ui/input/input';
 import { Text } from '@/components/ui/text/text';
 import { useMenu } from '@/hooks/use-menu';
+import { useOrderActions, useOrderOptional } from '@/hooks/use-orders';
 import { formatCents, t } from '@/i18n';
-import { useOrdersStore } from '@/store/orders.store';
 import { useTheme } from '@/theme/theme-provider';
 import { MeatPoint, OrderItemModifiers } from '@/types/order';
 
@@ -31,11 +31,11 @@ export default function CustomizeItemScreen() {
     itemId?: string;
   }>();
   const { findItem } = useMenu();
-  const addItemLocal = useOrdersStore((state) => state.addItemLocal);
-  const updateItemLocal = useOrdersStore((state) => state.updateItemLocal);
-  const existingItem = useOrdersStore((state) =>
-    itemId ? state.getOrder(id)?.items.find((item) => item.id === state.resolveId(itemId)) : undefined,
-  );
+  const { addItemLocal, updateItemLocal, resolveId } = useOrderActions();
+  const order = useOrderOptional(id);
+  const existingItem = itemId
+    ? order?.items.find((item) => item.id === resolveId(itemId))
+    : undefined;
 
   const menuItem = findItem(menuItemId) ?? existingItem?.menuItem;
   const initial = existingItem?.modifiers ?? undefined;

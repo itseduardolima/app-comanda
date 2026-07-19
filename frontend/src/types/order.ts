@@ -6,6 +6,9 @@ export type OrderType = 'dine_in' | 'counter' | 'delivery';
 export type PaymentStatus = 'unpaid' | 'paid';
 export type KitchenStatus = 'queued' | 'preparing' | 'ready' | 'delivered';
 
+/** List filter of GET /api/orders?status= (screen 01 tabs). */
+export type OrderListFilter = 'open' | 'paid' | 'all';
+
 export const KITCHEN_STATUS_SEQUENCE: KitchenStatus[] = [
   'queued',
   'preparing',
@@ -64,6 +67,11 @@ export interface KitchenTicket {
   number: number;
   createdAt: string;
   items: OrderItem[];
+}
+
+/** Ids created offline before the server assigns the real one (HU-28). */
+export function isLocalId(id: string): boolean {
+  return id.startsWith('local-');
 }
 
 /** Order total in cents = Σ quantity × finalPrice (unit). */
