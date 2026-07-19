@@ -40,7 +40,13 @@ Entregue um arquivo novo — `App Garcom Fogo e Brasa - Estados e Telas v2.dc.ht
 
 **Espaçamento**: 4 / 8 / 16 / 22 / 32 / 48. **Raios**: 10 / 13 / 16 / 18 / pill.
 
-Só modo claro. A marca é configurável (nome + monograma), então **não use "Fogo & Brasa" como elemento fixo de layout** — trate como dado.
+Só modo claro.
+
+**O produto é genérico — isto é o requisito mais importante deste brief.** "Fogo & Brasa" é uma marca fictícia de demonstração. O mesmo app precisa servir uma hamburgueria, um bar, uma pizzaria, uma cafeteria ou um restaurante por quilo, trocando só o tema. Portanto:
+
+- Nome e monograma são **dados**, nunca elemento fixo de layout.
+- **Nenhuma ilustração, ícone ou copy pode assumir um tipo de comida.** Nada de brasa, grelha, espeto, picanha. O domínio é *comanda*, não churrasco: mesa, comanda, pedido, ticket, salão, conta.
+- Itens de exemplo devem ser variados e neutros ("1× Prato do dia", "2× Suco natural"), não um cardápio de churrascaria.
 
 ### Restrições técnicas (importante — tudo será implementado em React Native)
 
@@ -49,6 +55,20 @@ Só modo claro. A marca é configurável (nome + monograma), então **não use "
 - **Animação**: será implementada com Reanimated. Para cada animação, especifique **duração em ms, easing e o que exatamente interpola** (opacidade, translateY, escala, largura). Nada que dependa de CSS puro (`filter`, `backdrop-filter`, keyframes complexos).
 - **Sombra**: no máximo uma sombra suave e uniforme por elevação. Sem sombras múltiplas ou coloridas.
 - Alvos de toque grandes: o app é usado em pé, com uma mão, às vezes com a tela suja.
+
+### Responsividade — não desenhe só o caso feliz
+
+Vi telas apertadas na primeira rodada. O celular do garçom não é o seu aparelho de referência: é o mais barato que a casa comprou, às vezes com a fonte do sistema aumentada porque quem usa tem 50 anos.
+
+Para cada tela densa (comanda, cardápio, KDS, fechamento de turno), mostre **também o caso apertado**, lado a lado com o confortável:
+
+- **Largura mínima 320pt** (iPhone SE) além da largura padrão. Se algo quebra, o desenho está errado — não o aparelho.
+- **Texto longo real**: nome de item com 40+ caracteres, nome de cliente comprido, `R$ 1.234,56`, quantidade `12×`. Diga o que trunca, o que quebra linha e o que nunca pode encolher (valor e status nunca).
+- **Fonte do sistema ampliada** (~130%): o que reflui e o que vira scroll.
+- **Tablet**: o app roda esticado. Diga se vira duas colunas ou se ganha margem lateral com largura máxima.
+- **Rotação**: o KDS é paisagem; o resto é retrato. Se o garçom girar, o que acontece?
+
+Prefira layout que **reflui** a layout que depende de caber. Truncar com reticências é decisão de design — diga onde é aceitável e onde é proibido.
 
 ---
 
@@ -68,7 +88,7 @@ Especifique a animação de shimmer: direção, duração, easing e as duas core
 
 ### 2. Estados vazios com ilustração SVG
 
-É o que mais sinto falta. Hoje são frases secas centralizadas. Quero ilustração + título + subtítulo + ação, com personalidade de churrascaria, sem virar clip-art.
+É o que mais sinto falta. Hoje são frases secas centralizadas. Quero ilustração + título + subtítulo + ação, com personalidade — mas personalidade **de serviço de salão**, não de um tipo de cozinha.
 
 - **2A** Nenhuma comanda aberta (é o estado mais visto do dia — merece ser o mais caprichado)
 - **2B** Nenhuma comanda paga ainda
@@ -78,7 +98,9 @@ Especifique a animação de shimmer: direção, duração, easing e as duas core
 - **2F** Sem conexão, com N alterações aguardando envio — deve transmitir "está tudo salvo, só não sincronizou ainda", não alarme
 - **2G** Falha ao carregar, com botão de tentar novamente
 
-Para as ilustrações: monocromáticas ou de 2 cores da paleta, traço de ~1.7px como os ícones existentes, altura de ~120–160px. Motivos possíveis: brasa, grelha, espeto, prato coberto, comanda de papel. Evite mascote e evite ilustração genérica de "caixa vazia".
+Para as ilustrações: monocromáticas ou de 2 cores da paleta, traço de ~1.7px como os ícones existentes, altura de ~120–160px.
+
+Motivos que servem a qualquer restaurante: comanda/ticket, mesa vista de cima, cadeiras, bandeja, sino de balcão, relógio de turno, prato genérico sem conteúdo identificável. **Não** use nada que identifique um tipo de cozinha. Evite mascote e evite a "caixa vazia" genérica.
 
 ### 3. Animações e microinterações
 
@@ -131,6 +153,24 @@ Colunas por estágio (Na fila / Preparando / Pronto), cada ticket como cartão c
 - Skeleton vs. spinner: onde cada um cabe
 
 ---
+
+### Nada de clichê de interface gerada por IA
+
+Este é um critério de reprovação, não uma preferência. O protótipo existente tem uma linguagem própria e sóbria; siga ela, não o visual padrão de dashboard.
+
+Proibido:
+
+- **Barra de acento colorida na lateral do card.** O protótipo tem zero `border-left` — status se comunica por badge e por cor de texto, que é a linguagem já estabelecida.
+- Pílula "AO VIVO" com pontinho pulsando.
+- Card dentro de card dentro de card.
+- Ícone decorativo ao lado de todo título.
+- Emoji como ilustração.
+- Gradiente, glassmorphism, sombra colorida, brilho.
+- Uppercase com letter-spacing exagerado fora do token `label` que já existe.
+- Números gigantes sem função, "métrica" que ninguém pediu.
+- Ilustração de estoque genérica — caixa vazia, prancheta, lupa, foguete.
+
+Antes de entregar, olhe cada tela e pergunte: *isto existe porque o garçom precisa, ou porque enche o espaço?* Se for a segunda, tire.
 
 ### O que me entregar
 
