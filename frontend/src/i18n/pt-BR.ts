@@ -94,6 +94,9 @@ export const ptBR = {
     viewOrder: 'Ver comanda',
     addDirect: 'Adicionar',
     customize: 'Personalizar',
+    /** Rótulos de acessibilidade — o card tem dois botões irmãos, cada um precisa se identificar. */
+    addItem: 'Adicionar {{name}} à comanda',
+    customizeItem: 'Personalizar {{name}}',
     loadError: 'Não foi possível carregar o cardápio.',
     browsingOnly: 'Abra uma comanda para adicionar itens.',
     itemAdded: 'Item adicionado à comanda',

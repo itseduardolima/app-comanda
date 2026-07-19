@@ -18,6 +18,16 @@ export const useStyles = createStyles((theme) => ({
     flexShrink: 0,
   },
   info: { flex: 1, gap: 2 },
+  /** The tappable "customize" area — a sibling of the "+" button, never its parent. */
+  details: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 13,
+  },
+  detailsPressed: {
+    opacity: 0.6,
+  },
   addButton: {
     width: 32,
     height: 32,
