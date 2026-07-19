@@ -9,7 +9,7 @@
 Como **garçom**, quero **que a tela de Cardápio mostre os itens e categorias reais vindos do backend**, para que **eu anote pedidos com o cardápio de verdade do restaurante, não com dados mockados**.
 
 ## Critérios de aceite
-- [ ] Tela Cardápio (`02`, criada na HU-07 com mock) passa a consumir `GET /api/menu` e `GET /api/menu/categories` via o cliente REST em `src/api/`.
+- [x] Tela Cardápio (`02`, criada na HU-07 com mock) passa a consumir `GET /api/menu` e `GET /api/menu/categories` via o cliente REST em `src/api/`.
 - [x] Estado de carregamento (loading) exibido enquanto a requisição está em andamento.
 - [x] Estado de erro tratado (ex.: sem rede, backend fora) com mensagem amigável em português (i18n), sem crashar a tela.
 - [x] Estrutura de dados mockada anterior é removida da tela (o mock pode continuar existindo como fixture de teste, mas não é mais a fonte da UI).

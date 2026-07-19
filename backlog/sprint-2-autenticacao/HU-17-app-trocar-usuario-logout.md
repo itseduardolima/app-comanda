@@ -10,7 +10,7 @@ Como **operador (garçom) usando um dispositivo compartilhado**, quero **trocar 
 
 ## Critérios de aceite
 - [x] Tela `00B Acesso rápido por PIN` exibe uma opção "Trocar" usuário que leva de volta à tela `00 Login`.
-- [ ] Ao trocar de usuário, qualquer PIN parcialmente digitado é descartado e nenhum dado do operador anterior fica visível na tela de Login.
+- [x] Ao trocar de usuário, qualquer PIN parcialmente digitado é descartado e nenhum dado do operador anterior fica visível na tela de Login.
 - [x] Existe uma ação de logout acessível a partir da tela `Perfil` (tab bar) que limpa a sessão ativa (token e dados do operador) e retorna à tela `00 Login`.
 - [x] Após logout, tentar acessar qualquer tela autenticada redireciona para `00 Login` (nenhuma tela protegida some visível "por trás").
 
@@ -28,6 +28,6 @@ Como **operador (garçom) usando um dispositivo compartilhado**, quero **trocar 
 ## Definition of Done
 - [x] Código em inglês, UI via i18n
 - [x] Tipos (`tsc`) e lint OK
-- [ ] Testes relevantes passando (componente/hook com React Native Testing Library)
+- [x] Testes relevantes passando (componente/hook com React Native Testing Library)
 - [x] Spec em `.specs/` atualizada, se o comportamento mudou
 - [x] Nenhuma lógica de pagamento/cobrança introduzida

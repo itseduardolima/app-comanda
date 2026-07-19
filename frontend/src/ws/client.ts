@@ -2,7 +2,8 @@ import Constants from 'expo-constants';
 import { io, Socket } from 'socket.io-client';
 import { drain } from '../db/sync-queue';
 import { useOrdersStore } from '../store/orders.store';
-import { KitchenStatus, PaymentStatus } from '../types/order';
+import { useTablesStore } from '../store/tables.store';
+import { ItemStatusChangedEvent, OrderUpdatedEvent, TicketCreatedEvent } from '../types/ws';
 
 /**
  * Single Socket.IO connection per app session (HU-32). Authenticated with
@@ -13,24 +14,6 @@ import { KitchenStatus, PaymentStatus } from '../types/order';
 
 const extra = (Constants.expoConfig?.extra ?? {}) as { wsUrl?: string };
 export const WS_URL = extra.wsUrl ?? 'http://localhost:3000';
-
-interface ItemStatusChangedEvent {
-  orderId: string;
-  itemId: string;
-  kitchenStatus: KitchenStatus;
-  changedAt?: string;
-}
-
-interface OrderUpdatedEvent {
-  orderId: string;
-  paymentStatus: PaymentStatus;
-  tableId?: string | null;
-}
-
-interface TicketCreatedEvent {
-  orderId: string;
-  ticketNumber: number;
-}
 
 type Subscription = { orderId?: string; tableId?: string };
 
@@ -89,6 +72,10 @@ export function connectSocket(token: string): void {
 
   socket.on('order.updated', (event: OrderUpdatedEvent) => {
     useOrdersStore.getState().applyOrderUpdated(event);
+    if (event.tableId && event.tableStatus) {
+      // Table grid stays live without a REST read (HU-32).
+      useTablesStore.getState().applyTableStatus(event.tableId, event.tableStatus);
+    }
   });
 
   socket.on('kitchen.ticket.created', (event: TicketCreatedEvent) => {

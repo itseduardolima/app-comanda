@@ -46,7 +46,7 @@
 | [HU-14](sprint-2-autenticacao/HU-14-app-tela-login.md) | App: tela Login integrada à API | Frontend | 3 | Parcial 10/11 |
 | [HU-15](sprint-2-autenticacao/HU-15-app-criar-pin.md) | App: Criar PIN (1º acesso) | Frontend | 3 | Parcial 10/11 |
 | [HU-16](sprint-2-autenticacao/HU-16-app-acesso-rapido-pin.md) | App: Acesso rápido por PIN | Frontend | 2 | Parcial 9/10 |
-| [HU-17](sprint-2-autenticacao/HU-17-app-trocar-usuario-logout.md) | App: Trocar usuário / logout | Frontend | 2 | Parcial 7/9 |
+| [HU-17](sprint-2-autenticacao/HU-17-app-trocar-usuario-logout.md) | App: Trocar usuário / logout | Frontend | 2 | Completa |
 | [HU-18](sprint-2-autenticacao/HU-18-app-persistencia-sessao-jwt.md) | App: persistência de sessão (JWT) e rotas protegidas | Frontend | 3 | Parcial 10/11 |
 
 ### Sprint 3 — Backend & persistência
@@ -59,7 +59,7 @@
 | [HU-23](sprint-3-backend-persistencia/HU-23-backend-orders-listar-comandas.md) | Backend: Orders — listar com filtro | Backend | 2 | Completa |
 | [HU-24](sprint-3-backend-persistencia/HU-24-backend-orders-detalhe-comanda.md) | Backend: Orders — detalhe da comanda | Backend | 2 | Completa |
 | [HU-25](sprint-3-backend-persistencia/HU-25-backend-orders-itens.md) | Backend: Orders — itens (adicionar/editar/remover) | Backend | 5 | Completa |
-| [HU-26](sprint-3-backend-persistencia/HU-26-app-integrar-cardapio-api.md) | App: integrar Cardápio com API real | Frontend | 3 | Parcial 8/10 |
+| [HU-26](sprint-3-backend-persistencia/HU-26-app-integrar-cardapio-api.md) | App: integrar Cardápio com API real | Frontend | 3 | Parcial 9/10 |
 | [HU-27](sprint-3-backend-persistencia/HU-27-app-integrar-comandas-api.md) | App: integrar Nova comanda/Escolher mesa/Detalhe com API real | Frontend | 5 | Parcial 8/11 |
 | [HU-28](sprint-3-backend-persistencia/HU-28-app-offline-first-sqlite.md) | App: persistência offline (expo-sqlite) + fila de sync | Frontend | 8 | Completa |
 

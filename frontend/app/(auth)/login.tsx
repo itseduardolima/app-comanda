@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text as RNText, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/button/button';
@@ -20,6 +20,16 @@ export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // "Switch user" pops back to this screen, which stays mounted: reset every
+  // trace of the previous operator whenever Login regains focus (HU-17).
+  useFocusEffect(
+    useCallback(() => {
+      setUsername('');
+      setError(null);
+      setLoading(false);
+    }, []),
+  );
 
   const handleContinue = async () => {
     const trimmed = username.trim().toLowerCase();

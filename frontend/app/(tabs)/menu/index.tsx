@@ -21,7 +21,7 @@ export default function MenuScreen() {
   const styles = useStyles();
   const router = useRouter();
   const { orderId } = useLocalSearchParams<{ orderId?: string }>();
-  const { categories, loading, loadError, reload } = useMenu();
+  const { categories, categoryNames, loading, loadError, reload } = useMenu();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const order = useOrderOptional(orderId);
@@ -68,12 +68,12 @@ export default function MenuScreen() {
               selected={selectedCategory === null}
               onPress={() => setSelectedCategory(null)}
             />
-            {categories.map((group) => (
+            {categoryNames.map((category) => (
               <Chip
-                key={group.category}
-                label={group.category}
-                selected={selectedCategory === group.category}
-                onPress={() => setSelectedCategory(group.category)}
+                key={category}
+                label={category}
+                selected={selectedCategory === category}
+                onPress={() => setSelectedCategory(category)}
               />
             ))}
           </View>

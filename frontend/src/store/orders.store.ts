@@ -14,6 +14,7 @@ import {
   OrderType,
 } from '../types/order';
 import { Table } from '../types/table';
+import { OrderUpdatedEvent, TicketCreatedEvent } from '../types/ws';
 
 export { isLocalId };
 
@@ -80,8 +81,8 @@ interface OrdersState {
     kitchenStatus: KitchenStatus;
     changedAt?: string;
   }): void;
-  applyOrderUpdated(event: { orderId: string }): void;
-  applyTicketCreated(event: { orderId: string }): void;
+  applyOrderUpdated(event: OrderUpdatedEvent): void;
+  applyTicketCreated(event: TicketCreatedEvent): void;
 
   clearSyncError(): void;
 }
@@ -309,14 +310,52 @@ export const useOrdersStore = create<OrdersState>((set, get) => ({
     set((state) => ({ orders: { ...state.orders, [orderId]: updated } }));
   },
 
-  applyOrderUpdated({ orderId }) {
-    // Deltas carry partial data — refetch the order as the new baseline.
-    void get().refreshOrder(orderId);
+  applyOrderUpdated({ orderId, paymentStatus, tableId, closedAt }) {
+    const id = get().resolveId(orderId);
+    const order = get().orders[id];
+    if (!order) {
+      // Order unknown on this device: there is no baseline to patch.
+      void get().refreshOrder(id);
+      return;
+    }
+
+    // The same event fires for "order closed" and for "item added/edited/removed"
+    // (see .specs/03-api-contrato.md). Payment fields are the only reliable
+    // discriminator the contract offers: a payment/close transition is fully
+    // described by the payload, so it becomes a pure delta.
+    const closed = closedAt != null && closedAt !== order.closedAt;
+    const paid = paymentStatus !== undefined && paymentStatus !== order.paymentStatus;
+    const paymentTransition = closed || paid;
+
+    const updated: Order = {
+      ...order,
+      paymentStatus: paymentStatus ?? order.paymentStatus,
+      closedAt: closedAt !== undefined ? closedAt : order.closedAt,
+      tableId: tableId !== undefined ? tableId : order.tableId,
+    };
+    persist(updated);
+    set((state) => ({ orders: { ...state.orders, [id]: updated } }));
+
+    if (!paymentTransition) {
+      // Item add/edit/remove: the contract does not ship the items in the
+      // payload, so another device cannot learn them without a REST read.
+      // Unavoidable until the server event carries the items.
+      void get().refreshOrder(id);
+    }
   },
 
-  applyTicketCreated({ orderId }) {
-    void get().loadTickets(orderId);
-    void get().refreshOrder(orderId);
+  applyTicketCreated({ orderId, ticketNumber }) {
+    const id = get().resolveId(orderId);
+    const known = get().tickets[id] ?? [];
+    if (known.some((ticket) => ticket.number === ticketNumber)) {
+      return;
+    }
+    // KitchenTicket needs id, createdAt and its items; the event only carries
+    // the number, so a full ticket cannot be built from the delta. Refetch is
+    // the only way to render it (contract limitation, not a client shortcut).
+    void get().loadTickets(id);
+    // Items just moved to a ticket (kitchenTicketId / queued) — not in the payload.
+    void get().refreshOrder(id);
   },
 
   clearSyncError() {

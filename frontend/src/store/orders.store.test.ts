@@ -220,3 +220,80 @@ describe('orders store — offline-first (HU-28)', () => {
     expect(state.getOrder(localId)?.items[0].id).toBe('item-9');
   });
 });
+
+describe('orders store — WebSocket deltas (HU-32)', () => {
+  function seed(order: Order): void {
+    useOrdersStore.setState({ orders: { [order.id]: order } });
+  }
+
+  it('applyOrderUpdated applies a close/payment delta without any REST call', async () => {
+    seed(serverOrder('srv-10', { paymentStatus: 'unpaid', tableId: 'table-1' }));
+
+    useOrdersStore.getState().applyOrderUpdated({
+      orderId: 'srv-10',
+      paymentStatus: 'paid',
+      tableId: null,
+      tableStatus: 'free',
+      closedAt: '2026-07-18T14:00:00.000Z',
+    });
+    await flush();
+
+    const order = useOrdersStore.getState().getOrder('srv-10');
+    expect(order?.paymentStatus).toBe('paid');
+    expect(order?.closedAt).toBe('2026-07-18T14:00:00.000Z');
+    expect(order?.tableId).toBeNull();
+    // The heart of the criterion: the delta alone updated the store.
+    expect(mockedApi.getOrder).not.toHaveBeenCalled();
+    expect(mockedApi.listOrders).not.toHaveBeenCalled();
+    // Offline-first: the delta is persisted locally too.
+    expect(localStore.getOrders().find((cached) => cached.id === 'srv-10')?.paymentStatus).toBe(
+      'paid',
+    );
+  });
+
+  it('applyOrderUpdated refetches only when nothing about payment changed (items may have)', async () => {
+    seed(serverOrder('srv-11', { paymentStatus: 'unpaid' }));
+    mockedApi.getOrder.mockResolvedValue(
+      serverOrder('srv-11', { items: [serverItem('item-1', 'srv-11')] }),
+    );
+
+    useOrdersStore.getState().applyOrderUpdated({ orderId: 'srv-11', paymentStatus: 'unpaid' });
+    await flush();
+
+    expect(mockedApi.getOrder).toHaveBeenCalledWith('srv-11');
+    expect(useOrdersStore.getState().getOrder('srv-11')?.items).toHaveLength(1);
+  });
+
+  it('applyOrderUpdated resolves local ids and skips the refetch for unknown local orders', async () => {
+    useOrdersStore.setState({
+      orders: { 'srv-12': serverOrder('srv-12') },
+      aliases: { 'local-order-x': 'srv-12' },
+    });
+
+    useOrdersStore.getState().applyOrderUpdated({
+      orderId: 'local-order-x',
+      paymentStatus: 'paid',
+      closedAt: '2026-07-18T15:00:00.000Z',
+    });
+    await flush();
+
+    expect(useOrdersStore.getState().getOrder('srv-12')?.paymentStatus).toBe('paid');
+    expect(mockedApi.getOrder).not.toHaveBeenCalled();
+  });
+
+  it('applyTicketCreated ignores a ticket number already known locally', async () => {
+    seed(serverOrder('srv-13'));
+    useOrdersStore.setState({
+      tickets: {
+        'srv-13': [
+          { id: 'ticket-1', orderId: 'srv-13', number: 7, createdAt: '2026-07-18T13:00:00.000Z', items: [] },
+        ],
+      },
+    });
+
+    useOrdersStore.getState().applyTicketCreated({ orderId: 'srv-13', ticketNumber: 7 });
+    await flush();
+
+    expect(mockedApi.getOrder).not.toHaveBeenCalled();
+  });
+});
