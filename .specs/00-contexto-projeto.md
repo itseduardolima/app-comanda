@@ -11,7 +11,8 @@ Origem do produto: protótipo de telas em `App Garcom Fogo e Brasa.dc.html` (val
 O protótipo vive no Claude Design e é a **fonte da verdade visual** — divergência entre app e protótipo é bug do app:
 
 - Projeto: <https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e>
-- Arquivo do app do garçom: <https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa.dc.html>
+- v1 — telas do MVP: <https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa.dc.html>
+- v2 — estados, movimento e telas novas (sprints 7 e 8): <https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html>
 
 Como consultá-lo e como transcrever um valor novo para token: [`frontend/.specs/03-estilos.md` § Fonte do design](../frontend/.specs/03-estilos.md#fonte-do-design).
 

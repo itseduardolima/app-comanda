@@ -24,7 +24,7 @@ Como **garçom**, quero **uma confirmação curta e discreta de que a ação deu
 - [ ] Testes em `frontend/__tests__/` cobrem: no máximo 2 toasts visíveis, toast com ação não é substituído por informativo, e o toast de offline dispara uma única vez em quedas repetidas de conexão.
 
 ## Escopo técnico
-- Referência: protótipo `design-v2.dc.html`, seção 5 e molduras 5A–5C.
+- Referência: protótipo [`App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html), seção 5 e molduras 5A–5C.
 - Disparos iniciais: adicionar item ao pedido, queda de conexão detectada pelo hook de rede, falha ao enviar à cozinha.
 - Estilos exclusivamente em `*.styles.ts` via `createStyles`.
 

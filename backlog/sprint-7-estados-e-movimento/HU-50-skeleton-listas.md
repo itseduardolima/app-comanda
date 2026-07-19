@@ -25,7 +25,7 @@ Como **garçom**, quero **ver a forma do conteúdo enquanto ele carrega, em vez 
 ## Escopo técnico
 - Telas afetadas: `app/(tabs)/orders/index.tsx`, `app/(tabs)/menu/index.tsx`, `app/orders/[id]/index.tsx`, `app/orders/[id]/kitchen.tsx`.
 - Estilos de tela em `src/styles/screens/*.styles.ts`; estilo do componente no sibling. Nenhum estilo inline (`.specs/03-estilos.md`).
-- Referência: protótipo `design-v2.dc.html`, molduras 1A–1D e a nota da seção 7 (skeleton quando a forma do conteúdo é previsível).
+- Referência: protótipo [`App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html), molduras 1A–1D e a nota da seção 7 (skeleton quando a forma do conteúdo é previsível).
 
 ## Fora de escopo
 - Skeleton em telas cuja forma não é previsível (Vendas, Perfil) — a seção 7 do protótipo restringe skeleton a lista, cardápio, detalhe e ticket.

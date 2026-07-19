@@ -25,7 +25,7 @@ Como **garçom**, quero **ver por padrão as comandas de hoje e ir carregando ma
 ## Escopo técnico
 - Consome o novo contrato de `GET /api/orders?date=&status=&cursor=&limit=` (HU-57): `frontend/src/api/` e `frontend/src/types/` precisam do envelope `{ data, page }`.
 - Estilos via `create-styles` / tokens do tema — sem estilo inline (regra de lint do projeto).
-- Referências: moldura 6B do protótipo v2, moldura 7 (skeleton vs. spinner), moldura 8A (densidade da lista a 390/320pt: valor e badge nunca encolhem, nome do cliente trunca).
+- Referências: moldura 6B do [protótipo v2](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html), moldura 7 (skeleton vs. spinner), moldura 8A (densidade da lista a 390/320pt: valor e badge nunca encolhem, nome do cliente trunca).
 
 ## Fora de escopo
 - Seletor de data arbitrária (calendário) — só Hoje/Ontem/Últimos 7 dias no MVP deste sprint.

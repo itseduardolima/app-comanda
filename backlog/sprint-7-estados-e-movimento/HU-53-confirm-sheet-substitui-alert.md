@@ -23,7 +23,7 @@ Como **garçom trabalhando de pé, com uma mão**, quero **que as confirmações
 - [ ] Testes em `frontend/__tests__/` cobrem: backdrop não confirma em variante destrutiva, "Sair" desabilitado com fila pendente, e ausência de qualquer affordance de remoção para item já enviado.
 
 ## Escopo técnico
-- Referência: protótipo `design-v2.dc.html`, seção 4 e molduras 4A–4D.
+- Referência: protótipo [`App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html), seção 4 e molduras 4A–4D.
 - A folha pode ser implementada com `Modal` + Reanimated, ou com `react-native-gesture-handler` para o arraste; a escolha é registrada no PR desde que o comportamento acima seja atendido e o web funcione.
 - Renderização via provider global (ex.: `ConfirmSheetProvider` em `app/_layout.tsx`) para que qualquer tela abra a folha por hook, sem montar modal na mão.
 

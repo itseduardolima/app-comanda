@@ -27,7 +27,7 @@ O trabalho é guiado pelo backlog em [`backlog/`](backlog/) (HU-01 … HU-48). C
 
 - **Código em inglês, UI em português.** `Order` no código, "Comanda" na tela. Nenhuma string de UI hardcoded — tudo via `src/i18n/`.
 - **Nenhum estilo inline no frontend.** JSX nunca carrega `style={{ … }}`. Todo estilo vive num `*.styles.ts` feito com `createStyles`; todo valor de cor/espaço/raio/fonte sai de `src/theme/tokens.ts`. O ESLint reprova — regra completa em [`frontend/.specs/03-estilos.md`](frontend/.specs/03-estilos.md).
-- **O protótipo manda no visual.** [Fogo e Brasa no Claude Design](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e) (`App Garcom Fogo e Brasa.dc.html`). Valor visual novo sai de lá, vira token, e só então entra num `.styles.ts`. Divergência app↔protótipo é bug do app.
+- **O protótipo manda no visual.** [Fogo e Brasa no Claude Design](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e) — `App Garcom Fogo e Brasa.dc.html` (telas do MVP) e `App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html` (estados, movimento, KDS). Valor visual novo sai de lá, vira token, e só então entra num `.styles.ts`. Divergência app↔protótipo é bug do app.
 - **Tela não fala com a rede.** `app/**` importa só de `src/hooks`; nunca de `src/api`, `src/ws` ou `src/db`.
 - **Offline-first**: toda mutação do app tem que tolerar a rede caindo (escreve local em `expo-sqlite`, sincroniza depois).
 - **Componente base é único**: `Button`, `Badge`, `Card`, `Text`, `Input`, `Chip` só existem em `src/components/ui/`. Variação visual nova = novo `variant`, não componente novo.

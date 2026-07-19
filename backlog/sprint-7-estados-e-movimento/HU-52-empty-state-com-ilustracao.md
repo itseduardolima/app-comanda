@@ -24,7 +24,7 @@ Como **garçom**, quero **que toda tela sem conteúdo me diga o que aconteceu e 
 
 ## Escopo técnico
 - Telas afetadas: `app/(tabs)/orders/index.tsx` (2A, 2B), `app/(tabs)/menu/index.tsx` (2C, 2G), `app/orders/[id]/index.tsx` (2D), `app/orders/[id]/kitchen.tsx` (2E), lista de comandas offline (2F).
-- Referência: protótipo `design-v2.dc.html`, seção 2 e molduras 2A–2G.
+- Referência: protótipo [`App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html), seção 2 e molduras 2A–2G.
 - `react-native-svg` vem da HU-49.
 
 ## Fora de escopo

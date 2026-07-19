@@ -6,6 +6,7 @@
 >
 > **Convenção de numeração**: HUs numeradas sequencialmente `HU-01` a `HU-62`, únicas em todo o backlog (não reiniciam por sprint).
 > **Estimativa**: story points em escala Fibonacci (1, 2, 3, 5, 8).
+> **Protótipo de design** (fonte da verdade visual das HUs): [projeto no Claude Design](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e) — [v1 · telas do MVP](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa.dc.html) e [v2 · estados, movimento e telas novas](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html). Os sprints 7 e 8 saem do **v2**; as molduras citadas nos critérios (ex.: "moldura 6A") estão lá.
 > **Idioma**: HUs escritas em português (artefato de produto/negócio); código e specs técnicas seguem a convenção do repo (código em inglês — ver `.specs/05-padroes-de-codigo.md`).
 
 ## Sprints

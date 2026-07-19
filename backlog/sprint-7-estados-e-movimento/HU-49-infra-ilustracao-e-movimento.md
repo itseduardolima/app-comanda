@@ -21,7 +21,7 @@ Como **desenvolvedor**, quero **uma base pronta para desenhar ilustrações veto
 
 ## Escopo técnico
 - `react-native-reanimated@4.5.0` já está instalado e hoje não é usado em nenhum arquivo; esta HU é a primeira a consumi-lo. Confirmar que o plugin do Babel está configurado e que o app roda com ele ativo.
-- Referência: protótipo `design-v2.dc.html`, legenda da seção 3 (easings e spring), seção 7 (skeleton vs. spinner) e seção 2 (elementos SVG permitidos).
+- Referência: protótipo [`App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html), legenda da seção 3 (easings e spring), seção 7 (skeleton vs. spinner) e seção 2 (elementos SVG permitidos).
 - Tokens entram em `tokens.ts` primeiro, como manda `.specs/03-estilos.md`; nada de duração inline nos componentes.
 
 ## Fora de escopo

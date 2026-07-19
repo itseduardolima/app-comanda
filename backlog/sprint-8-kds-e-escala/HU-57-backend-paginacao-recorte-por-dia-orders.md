@@ -23,7 +23,7 @@ Como **garçom**, quero **que a listagem de comandas traga apenas o dia que esto
 ## Escopo técnico
 - `OrdersService.findAll` (`backend/src/orders/orders.service.ts`) hoje faz `findMany` sem paginação e sem recorte de data, com `orderInclude` completo por linha — é exatamente o problema descrito em `PROXIMOS-PASSOS.md` § "A listagem de comandas cresce sem limite".
 - DTO de query (`dto/list-orders.dto.ts`) estendido com `class-validator`; lembrar que o `ValidationPipe` global é `whitelist` + `forbidNonWhitelisted`.
-- Referências: `.specs/03-api-contrato.md` (seção Orders), `.specs/02-modelo-de-dados.md`, HU-23 (listagem original, que declarava paginação fora de escopo).
+- Referências: `.specs/03-api-contrato.md` (seção Orders), `.specs/02-modelo-de-dados.md`, HU-23 (listagem original, que declarava paginação fora de escopo). Protótipo: [protótipo v2](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html).
 
 ## Fora de escopo
 - Recortes maiores que um dia com agregação (ex.: relatório do mês) — a aba Vendas é outra HU.

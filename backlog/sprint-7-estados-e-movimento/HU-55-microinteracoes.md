@@ -22,7 +22,7 @@ Como **garçom de pé, com o aparelho numa mão**, quero **que o app responda vi
 
 ## Escopo técnico
 - Componentes afetados: `order-card`, `menu-item-card`, `kitchen-status-stepper`, `ui/chip`, `ui/button`, `ui/card`, e a barra de total do detalhe da comanda.
-- Referência: protótipo `design-v2.dc.html`, seção 3 (easings e prioridade de implementação) e molduras 3B, 3C, 3D, 3E, 3F, 3H.
+- Referência: protótipo [`App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html), seção 3 (easings e prioridade de implementação) e molduras 3B, 3C, 3D, 3E, 3F, 3H.
 - Haptics via `expo-haptics` (adicionar com `npx expo install` se ainda não estiver no projeto); no web o haptic é no-op.
 
 ## Fora de escopo

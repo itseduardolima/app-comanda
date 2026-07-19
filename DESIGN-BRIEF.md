@@ -11,7 +11,7 @@ Estou evoluindo o **App do Garçom — Fogo & Brasa**, que já existe neste proj
 
 **Não redesenhe as 14 telas existentes** (00, 00A, 00B, 01, 1A, 1B, 02, 03, 04, 4A–4D). Elas estão implementadas e validadas. O que preciso é do que ficou faltando: **estados** (carregando, vazio, erro, offline), **animação**, e algumas **telas novas**.
 
-Entregue um arquivo novo — `App Garcom Fogo e Brasa - Estados e Telas v2.dc.html` — no mesmo estilo de canvas do existente: molduras de celular lado a lado, cada uma rotulada com código e nome.
+Entregue um arquivo novo — `App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html` — no mesmo estilo de canvas do existente: molduras de celular lado a lado, cada uma rotulada com código e nome.
 
 ### Sistema de design (use exatamente estes valores, não invente novos)
 

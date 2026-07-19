@@ -9,8 +9,11 @@
 O protótipo é a **fonte da verdade visual**. Divergência entre o app e o protótipo é bug do app, não do protótipo.
 
 - **Projeto**: [Fogo e Brasa · Claude Design](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e)
-- **Arquivo deste app**: [`App Garcom Fogo e Brasa.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa.dc.html)
+- **v1 · telas do MVP** (as 14 telas implementadas): [`App Garcom Fogo e Brasa.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa.dc.html)
+- **v2 · estados, movimento e telas novas** (base dos sprints 7 e 8): [`App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html)
 - `projectId`: `0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e`
+
+Os dois arquivos são complementares: o **v1** define as telas do fluxo; o **v2** define skeletons, estados vazios, movimento (com duração e easing por animação), confirmação, toast, KDS, erros de servidor e as regras de densidade. Nenhum dos dois substitui o outro.
 
 O mesmo projeto contém `PDV Fogo e Brasa.dc.html` e `Backoffice Fogo e Brasa.dc.html` — **fora do escopo** do app do garçom, que é o único produto do backlog atual.
 

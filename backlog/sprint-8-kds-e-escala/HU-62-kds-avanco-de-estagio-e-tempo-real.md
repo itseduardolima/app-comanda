@@ -27,7 +27,7 @@ Como **cozinheiro**, quero **que um toque avance o ticket de estágio e que a te
 ## Escopo técnico
 - `backend/src/kitchen/kitchen.gateway.ts` já tem rooms por comanda e por mesa e emite `item.status.changed`, `order.updated` (com `change` discriminado) e `kitchen.ticket.created`; a room de cozinha é o que falta.
 - O gateway continua **read-only por design**: toda mutação passa por REST, o WebSocket só difunde estado já persistido.
-- Referências: molduras 6A (um botão por cartão, sequência estrita, sem desfazer) e 6C·1 (estado sem conexão); HU-33 (reconexão e ressincronização).
+- Referências: molduras 6A (um botão por cartão, sequência estrita, sem desfazer) e 6C·1 (estado sem conexão); HU-33 (reconexão e ressincronização). Protótipo: [protótipo v2](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html).
 
 ## Fora de escopo
 - "Chamar garçom" — depende de push, device token e "garçom responsável pela mesa", que não existem no modelo (registrado também na HU-61).

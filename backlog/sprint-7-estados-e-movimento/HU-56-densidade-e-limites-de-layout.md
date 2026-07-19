@@ -24,7 +24,7 @@ Como **garçom com um aparelho de tela pequena e a fonte do sistema ampliada**, 
 
 ## Escopo técnico
 - Telas afetadas: `app/(tabs)/orders/index.tsx`, `app/orders/[id]/index.tsx`, `app/(tabs)/menu/index.tsx`, e o container raiz de `app/_layout.tsx` para a régua de 560pt.
-- Referência: protótipo `design-v2.dc.html`, seção 8 e molduras 8A–8E.
+- Referência: protótipo [`App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html), seção 8 e molduras 8A–8E.
 - Ajustes exclusivamente em `src/styles/screens/*.styles.ts` e nos siblings dos componentes; nenhum estilo inline.
 
 ## Fora de escopo

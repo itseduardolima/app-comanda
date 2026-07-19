@@ -24,7 +24,7 @@ Como **garçom**, quero **que o app me diga claramente quando o problema é do s
 
 ## Escopo técnico
 - Ponto natural de acionamento: o interceptor/cliente HTTP em `frontend/src/api/` e o cliente WebSocket, sinalizando um estado global de erro para o `_layout` renderizar a tela por cima.
-- Referências: molduras 6C·1, 6C·2 e 6C·3 do protótipo v2; `PROXIMOS-PASSOS.md` § Tier 1 (`Alert` do React Native não funciona na web — estas telas são componentes próprios, não `Alert`).
+- Referências: molduras 6C·1, 6C·2 e 6C·3 do [protótipo v2](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html); `PROXIMOS-PASSOS.md` § Tier 1 (`Alert` do React Native não funciona na web — estas telas são componentes próprios, não `Alert`).
 
 ## Fora de escopo
 - Forçar a atualização por si só (download/instalação do binário) — o botão apenas abre a loja / o canal de update configurado.

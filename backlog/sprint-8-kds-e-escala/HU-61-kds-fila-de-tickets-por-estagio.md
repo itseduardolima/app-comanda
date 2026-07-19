@@ -27,7 +27,7 @@ Como **cozinheiro**, quero **ver na parede a fila de tickets separada por estág
 ## Escopo técnico
 - `GET /api/kitchen/tickets` hoje só aceita `orderId`; a fila do KDS precisa de recorte por dia/estágio — ajuste de contrato coordenado com HU-62 e registrado em `.specs/03-api-contrato.md`.
 - Reaproveitar tokens e componentes existentes (`kitchen-status-stepper`, `card`, `badge`) com uma escala própria de KDS (leitura a 2 m), sem estilo inline.
-- Referências: moldura 6A do protótipo v2; moldura 8E (KDS em paisagem travada); `PROXIMOS-PASSOS.md` § "A cozinha não tem tela".
+- Referências: moldura 6A do [protótipo v2](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html); moldura 8E (KDS em paisagem travada); `PROXIMOS-PASSOS.md` § "A cozinha não tem tela".
 
 ## Fora de escopo
 - **"Chamar garçom"** (desenhado tracejado na moldura 6A como proposta): exigiria push, registro de device token e a noção de "garçom responsável pela mesa", que o modelo de dados não tem. Sem push, o aviso só apareceria para quem já estivesse olhando o app — inútil. Não entra neste sprint.

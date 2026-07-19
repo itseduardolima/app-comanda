@@ -23,7 +23,7 @@ Como **garçom**, quero **que o botão que eu toquei mostre que está trabalhand
 
 ## Escopo técnico
 - Botões afetados hoje: enviar à cozinha (`app/orders/[id]/index.tsx`), fechar conta, criar comanda, verificar PIN.
-- Referência: protótipo `design-v2.dc.html`, molduras 1E e 1F, e seção 7 ("spinner quando a espera é consequência de um toque").
+- Referência: protótipo [`App Garcom Fogo e Brasa v2 - Estados e Telas.dc.html`](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html), molduras 1E e 1F, e seção 7 ("spinner quando a espera é consequência de um toque").
 - Novos textos em `src/i18n/pt-BR.ts`; nenhuma string hardcoded.
 
 ## Fora de escopo

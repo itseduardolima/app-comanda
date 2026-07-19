@@ -23,7 +23,7 @@ Como **dono do restaurante**, quero **que o tablet fixo da cozinha acesse o KDS 
 ## Escopo técnico
 - Autenticação hoje é operador com `username` + PIN (`backend/src/auth/`). O tablet fixo é um caso diferente — **dispositivo compartilhado, sem garçom logado**; por isso o pareamento por código, não uma conta de operador "cozinha".
 - Reaproveitar o `WsJwtGuard` existente (`backend/src/kitchen/kitchen.gateway.ts` valida JWT no handshake) para aceitar também o sujeito dispositivo.
-- Referências: `PROXIMOS-PASSOS.md` § "A cozinha não tem tela"; moldura 6A (tablet fixo na parede, leitura a 2 m).
+- Referências: `PROXIMOS-PASSOS.md` § "A cozinha não tem tela"; moldura 6A (tablet fixo na parede, leitura a 2 m). Protótipo: [protótipo v2](https://claude.ai/design/p/0edee1ad-dd7e-41e4-b6a3-82d027c7bc6e?file=App+Garcom+Fogo+e+Brasa+v2+-+Estados+e+Telas.dc.html).
 
 ## Fora de escopo
 - Tela de administração de dispositivos (o pareamento é gerado por CLI/seed neste sprint).
