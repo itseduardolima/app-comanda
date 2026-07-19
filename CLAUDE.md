@@ -2,6 +2,11 @@
 
 App do garçom para gerenciar comandas: monorepo com `backend/` (NestJS + Prisma + PostgreSQL, tempo real via Socket.IO) e `frontend/` (React Native + Expo Router).
 
+Este arquivo cobre o que vale para o repo inteiro. Ao entrar numa das pastas, leia também o guia dela:
+
+- [`backend/CLAUDE.md`](backend/CLAUDE.md) — anatomia de módulo Nest, DTOs, transações, dinheiro em centavos
+- [`frontend/CLAUDE.md`](frontend/CLAUDE.md) — camadas, padrão de estilo, offline-first, i18n
+
 ## Antes de escrever código
 
 **`.specs/` é a fonte da verdade.** Leia a spec da área antes de mexer nela; se o código divergir da spec, é bug do código. Mudança de comportamento = atualizar a spec no mesmo commit.
